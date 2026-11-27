@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Painel · Emi Santos</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&amp;family=Lato:wght@400;700&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#050505}
+    body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    a{color:#B89570;text-decoration:none}
+    a:hover{color:#D2B18B}
+    :focus-visible{outline:2px solid #B89570;outline-offset:4px}
+    input[type="date"],input[type="time"]{color-scheme:light}
+    button:disabled{cursor:default}
+  </style>
+</helmet>
+<div style="min-height:100vh;background:#050505;color:#FFFFFF;font-family:'Lato',sans-serif">
+  <header style="border-bottom:1px solid #111111">
+    <div style="width:min(92%,960px);min-height:72px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px">
+      <div style="display:flex;align-items:baseline;gap:14px">
+        <span style="font-family:'Allura',cursive;font-size:32px;line-height:1;color:#B89570">Emi Santos</span>
+        <span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Painel</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:24px">
+        <a href="index.html" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Ver site</a>
+        <sc-if value="{{ logged }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ sair }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Sair</button></sc-if>
+      </div>
+    </div>
+  </header>
+  <main style="width:min(92%,960px);margin:0 auto;padding:32px 0 96px">
+    <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty;color:#99918A">Carregando…</p></sc-if>
+    <sc-if value="{{ erro }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty">Não foi possível carregar o painel. Confira a internet e recarregue a página.</p></sc-if>
+    <sc-if value="{{ showLogin }}" hint-placeholder-val="{{ false }}"><div style="max-width:420px;margin:clamp(16px,6vh,64px) auto 0;padding:clamp(20px,3vw,32px);background:#111111;border:1px solid #806044">
+      <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#B89570">Bem-vinda</p>
+      <h1 style="margin:0 0 24px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Entrar no painel</h1>
+      <form onSubmit="{{ entrar }}" style="display:flex;flex-direction:column;gap:16px">
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">E-mail</span><input type="email" value="{{ lEmail }}" onChange="{{ setLEmail }}" autocomplete="email" inputmode="email" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Senha</span><input type="password" value="{{ lSenha }}" onChange="{{ setLSenha }}" autocomplete="current-password" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <sc-if value="{{ lHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ lErr }}</p></sc-if>
+        <button type="submit" disabled="{{ lBusy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;margin-top:4px;opacity:{{ lOp }}" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">{{ lBtn }}</button>
+      </form>
+      <sc-if value="{{ hasGoogle }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ entrarGoogle }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;margin-top:10px;color:#050505;background:#FFFFFF;border-color:#FFFFFF" style-hover="background:#EAE8E5;border-color:#EAE8E5">Entrar com Google</button></sc-if>
+      <sc-if value="{{ demo }}" hint-placeholder-val="{{ false }}"><p style="margin:18px 0 0;font-family:'Lato',sans-serif;font-size:13px;line-height:1.5;color:#99918A">Modo demonstração: entre com qualquer e-mail e senha.</p></sc-if>
+    </div></sc-if>
+    <sc-if value="{{ notAdmin }}" hint-placeholder-val="{{ false }}"><div style="max-width:420px;margin:clamp(16px,6vh,64px) auto 0;padding:clamp(20px,3vw,32px);background:#111111;border:1px solid #806044;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+      <h1 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Sem acesso</h1>
+      <p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty">A conta {{ email }} não tem acesso ao painel. Entre com a conta da Emi.</p>
+      <button type="button" onClick="{{ sair }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Sair</button>
+    </div></sc-if>
+    <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div>
+      <div style="margin-bottom:28px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px">
+        <div>
+          <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#B89570">{{ saudacao }}</p>
+          <h1 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(22px,3vw,28px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#FFFFFF">{{ hojeTxt }}</h1>
+        </div>
+        <sc-if value="{{ demo }}" hint-placeholder-val="{{ false }}"><span style="padding:6px 10px;border:1px solid #806044;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#B89570">Demonstração</span></sc-if>
+      </div>
+      <div role="tablist" aria-label="Seções" style="margin-bottom:32px;display:flex;flex-wrap:wrap;gap:0 28px;border-bottom:1px solid #806044">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+          <button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.go }}" style="position:relative;min-height:48px;padding:0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:{{ t.fg }};background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">{{ t.label }}<sc-if value="{{ t.on }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#B89570"></span></sc-if></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ hasAgErr }}" hint-placeholder-val="{{ false }}"><div style="margin-bottom:24px"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ agErr }}</p></div></sc-if>
+      <sc-if value="{{ tabAgenda }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:48px">
+  <section>
+    <h2 style="margin:0 0 16px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Pedidos novos</h2>
+    <sc-if value="{{ noPend }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty;color:#99918A">Nenhum pedido aguardando confirmação.</p></sc-if>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ pend }}" as="a" hint-placeholder-count="2"><div style="padding:16px 18px;background:#111111;border:1px solid {{ a.bd }};opacity:{{ a.op }};display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px">
+  <div style="min-width:0;flex:1 1 240px;display:flex;flex-direction:column;gap:6px">
+    <span style="font-family:'Montserrat',sans-serif;font-size:14px;font-weight:600;line-height:1.3;color:#B89570">{{ a.hora }}</span>
+    <span style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;line-height:1.3;letter-spacing:0.03em;text-transform:uppercase;color:#FFFFFF">{{ a.servico }}</span>
+    <span style="font-family:'Lato',sans-serif;font-size:14px;line-height:1.4;color:#FFFFFF">{{ a.nome }}<sc-if value="{{ a.hasFone }}" hint-placeholder-val="{{ false }}"> · {{ a.fone }}</sc-if></span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px">
+    <span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:{{ a.cor }}">{{ a.status }}</span>
+    <sc-if value="{{ a.podeConfirmar }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ a.confirmar }}" disabled="{{ a.busy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;min-height:44px;padding:0 20px" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">{{ a.confirmLabel }}</button></sc-if>
+    <sc-if value="{{ a.hasWa }}" hint-placeholder-val="{{ false }}"><a href="{{ a.waLink }}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">{{ a.waLabel }}</a></sc-if>
+    <sc-if value="{{ a.podeCancelar }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ a.cancelar }}" disabled="{{ a.busy }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">{{ a.cancelLabel }}</button></sc-if>
+  </div>
+</div></sc-for>
+    </div>
+  </section>
+  <section>
+    <div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Agenda<span style="margin-left:10px;font-weight:500;letter-spacing:0;text-transform:none;color:#99918A">{{ mesTxt }}</span></h2>
+      <div style="display:flex;gap:8px"><button type="button" onClick="{{ prev }}" disabled="{{ prevDis }}" aria-label="Semana anterior" style="width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:18px;line-height:1;color:#FFFFFF;background:transparent;border:1px solid #806044;cursor:pointer;opacity:{{ prevOp }};transition:border-color 250ms ease" style-hover="border-color:#D2B18B">‹</button><button type="button" onClick="{{ next }}" disabled="{{ nextDis }}" aria-label="Próxima semana" style="width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:18px;line-height:1;color:#FFFFFF;background:transparent;border:1px solid #806044;cursor:pointer;opacity:{{ nextOp }};transition:border-color 250ms ease" style-hover="border-color:#D2B18B">›</button></div>
+    </div>
+    <div style="margin-bottom:28px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px">
+      <sc-for list="{{ dias }}" as="d" hint-placeholder-count="7">
+        <button type="button" onClick="{{ d.pick }}" aria-pressed="{{ d.pressed }}" aria-label="{{ d.aria }}" style="min-height:72px;padding:8px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:{{ d.fg }};background:{{ d.bg }};border:1px solid {{ d.bd }};transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="border-color:#D2B18B">
+          <span style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:500;line-height:1;letter-spacing:0.06em;text-transform:uppercase">{{ d.wd }}</span>
+          <span style="font-family:'Montserrat',sans-serif;font-size:17px;font-weight:600;line-height:1">{{ d.num }}</span>
+          <span style="min-height:11px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;line-height:1;color:{{ d.sub }}">{{ d.qtd }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <h3 style="margin:0 0 14px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:600;line-height:1.3;color:#FFFFFF">{{ diaTitulo }}</h3>
+    <sc-if value="{{ diaVazio }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty;color:#99918A">Nenhum horário marcado neste dia.</p></sc-if>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ itens }}" as="a" hint-placeholder-count="2"><sc-if value="{{ a.isAg }}" hint-placeholder-val="{{ true }}"><div style="padding:16px 18px;background:#111111;border:1px solid {{ a.bd }};opacity:{{ a.op }};display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px">
+  <div style="min-width:0;flex:1 1 240px;display:flex;flex-direction:column;gap:6px">
+    <span style="font-family:'Montserrat',sans-serif;font-size:14px;font-weight:600;line-height:1.3;color:#B89570">{{ a.hora }}</span>
+    <span style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;line-height:1.3;letter-spacing:0.03em;text-transform:uppercase;color:#FFFFFF">{{ a.servico }}</span>
+    <span style="font-family:'Lato',sans-serif;font-size:14px;line-height:1.4;color:#FFFFFF">{{ a.nome }}<sc-if value="{{ a.hasFone }}" hint-placeholder-val="{{ false }}"> · {{ a.fone }}</sc-if></span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px">
+    <span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:{{ a.cor }}">{{ a.status }}</span>
+    <sc-if value="{{ a.podeConfirmar }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ a.confirmar }}" disabled="{{ a.busy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;min-height:44px;padding:0 20px" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">{{ a.confirmLabel }}</button></sc-if>
+    <sc-if value="{{ a.hasWa }}" hint-placeholder-val="{{ false }}"><a href="{{ a.waLink }}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">{{ a.waLabel }}</a></sc-if>
+    <sc-if value="{{ a.podeCancelar }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ a.cancelar }}" disabled="{{ a.busy }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">{{ a.cancelLabel }}</button></sc-if>
+  </div>
+</div></sc-if><sc-if value="{{ a.isBloq }}" hint-placeholder-val="{{ false }}"><div style="padding:16px 18px;border:1px dashed #B89570;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <span style="font-family:'Montserrat',sans-serif;font-size:14px;font-weight:600;line-height:1.3;color:#99918A">{{ a.hora }}</span>
+    <span style="font-family:'Lato',sans-serif;font-size:14px;line-height:1.4;color:#FFFFFF">Bloqueado · {{ a.motivo }}</span>
+  </div>
+  <button type="button" onClick="{{ a.remover }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Desbloquear</button>
+</div></sc-if></sc-for>
+    </div>
+  </section>
+</div></sc-if>
+      <sc-if value="{{ tabBloq }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:start;gap:40px">
+  <form onSubmit="{{ bloquear }}" style="padding:clamp(20px,3vw,32px);background:#111111;border:1px solid #806044;display:flex;flex-direction:column;gap:16px">
+    <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Bloquear horários</h2>
+    <p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty">Para folgas, feriados e compromissos. Deixe os horários em branco para bloquear o dia inteiro.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Dia</span><input type="date" value="{{ bDia }}" onChange="{{ setBDia }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Até o dia (opcional)</span><input type="date" value="{{ bAte }}" onChange="{{ setBAte }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label></div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Das</span><input type="time" value="{{ bIni }}" onChange="{{ setBIni }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Até</span><input type="time" value="{{ bFim }}" onChange="{{ setBFim }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label></div>
+    <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Motivo (opcional)</span><input type="text" value="{{ bMotivo }}" onChange="{{ setBMotivo }}" placeholder="Folga, feriado, curso…" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+    <sc-if value="{{ bHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ bErr }}</p></sc-if><sc-if value="{{ bHasMsg }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.5;color:#D2B18B">{{ bMsg }}</p></sc-if>
+    <button type="submit" disabled="{{ bBusy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;opacity:{{ bOp }}" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Bloquear</button>
+  </form>
+  <div>
+    <h2 style="margin:0 0 6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Próximos bloqueios</h2>
+    <sc-if value="{{ noBloqs }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty;padding-top:10px;color:#99918A">Nenhum bloqueio marcado.</p></sc-if>
+    <sc-for list="{{ bloqs }}" as="b" hint-placeholder-count="1">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 20px;padding:16px 0;border-bottom:1px solid #806044">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;line-height:1.3;color:#FFFFFF">{{ b.quando }}</span>
+          <span style="font-family:'Lato',sans-serif;font-size:14px;line-height:1.4;color:#FFFFFF">{{ b.motivo }}</span>
+        </div>
+        <button type="button" onClick="{{ b.remover }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Desbloquear</button>
+      </div>
+    </sc-for>
+  </div>
+</div></sc-if>
+      <sc-if value="{{ tabLancar }}" hint-placeholder-val="{{ false }}"><form onSubmit="{{ lancar }}" style="max-width:640px;padding:clamp(20px,3vw,32px);background:#111111;border:1px solid #806044;display:flex;flex-direction:column;gap:18px">
+  <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Lançar atendimento</h2>
+  <p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#FFFFFF;text-wrap:pretty">Para horários marcados pelo Instagram, WhatsApp ou pessoalmente. Entra como confirmado e o horário deixa de aparecer no site.</p>
+  <div>
+    <p style="margin:0 0 10px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Serviço</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:8px">
+      <sc-for list="{{ mServs }}" as="s" hint-placeholder-count="4">
+        <button type="button" onClick="{{ s.pick }}" aria-pressed="{{ s.pressed }}" style="min-height:48px;padding:10px 12px;text-align:left;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.3;letter-spacing:0.03em;text-transform:uppercase;cursor:pointer;color:{{ s.fg }};background:{{ s.bg }};border:1px solid {{ s.bd }};transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="border-color:#D2B18B">{{ s.nome }}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Dia</span><input type="date" value="{{ mDia }}" onChange="{{ setMDia }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Horário</span><input type="time" value="{{ mHora }}" onChange="{{ setMHora }}" step="300" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label></div>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Nome da cliente</span><input type="text" value="{{ mNome }}" onChange="{{ setMNome }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label><label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">WhatsApp</span><input type="tel" value="{{ mWhats }}" onChange="{{ setMWhats }}" inputmode="tel" placeholder="Opcional" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label></div>
+  <sc-if value="{{ mHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ mErr }}</p></sc-if><sc-if value="{{ mHasMsg }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.5;color:#D2B18B">{{ mMsg }}</p></sc-if>
+  <button type="submit" disabled="{{ mBusy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;opacity:{{ mOp }}" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Lançar atendimento</button>
+</form></sc-if>
+      <sc-if value="{{ tabAjustes }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:56px">
+  <section>
+    <h2 style="margin:0 0 6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Serviços</h2>
+    <p style="margin:0 0 4px;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#99918A">É o que aparece na agenda do site. Desmarque “No site” para esconder um serviço sem apagar.</p>
+    <sc-for list="{{ servRows }}" as="s" hint-placeholder-count="3">
+      <div style="padding:18px 0;border-bottom:1px solid #806044;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+        <label style="display:flex;flex-direction:column;gap:8px;flex:3 1 220px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Serviço</span><input type="text" value="{{ s.nome }}" onChange="{{ s.setNome }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 96px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Minutos</span><input type="number" value="{{ s.duracao }}" onChange="{{ s.setDur }}" min="5" max="600" step="5" inputmode="numeric" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 110px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Valor (R$)</span><input type="text" value="{{ s.valor }}" onChange="{{ s.setValor }}" inputmode="decimal" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <div style="flex:1 1 240px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 20px">
+          <label style="display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font-family:'Lato',sans-serif;font-size:14px;line-height:1.2;color:#FFFFFF"><input type="checkbox" checked="{{ s.ativo }}" onChange="{{ s.setAtivo }}" style="width:20px;height:20px;margin:0;accent-color:#B89570;cursor:pointer">No site</label>
+          <sc-if value="{{ s.dirty }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ s.salvar }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;min-height:44px;padding:0 18px" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Salvar</button></sc-if>
+          <button type="button" onClick="{{ s.excluir }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">{{ s.excluirLabel }}</button>
+        </div>
+      </div>
+    </sc-for>
+    <form onSubmit="{{ novoServ }}" style="padding:18px 0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+      <label style="display:flex;flex-direction:column;gap:8px;flex:3 1 220px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Novo serviço</span><input type="text" value="{{ nNome }}" onChange="{{ setNNome }}"  style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+      <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 96px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Minutos</span><input type="number" value="{{ nDur }}" onChange="{{ setNDur }}" min="5" max="600" step="5" inputmode="numeric" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+      <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 110px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Valor (R$)</span><input type="text" value="{{ nValor }}" onChange="{{ setNValor }}" inputmode="decimal" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+      <div style="flex:1 1 240px;display:flex;align-items:center"><button type="submit" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Adicionar</button></div>
+    </form>
+    <div style="display:flex;flex-direction:column;gap:6px"><sc-if value="{{ sHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ sErr }}</p></sc-if><sc-if value="{{ sHasMsg }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.5;color:#D2B18B">{{ sMsg }}</p></sc-if></div>
+  </section>
+  <section>
+    <h2 style="margin:0 0 6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Horário de atendimento</h2>
+    <p style="margin:0 0 4px;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#99918A">Dias sem “Atende” marcado não aparecem para agendamento.</p>
+    <sc-for list="{{ horRows }}" as="h" hint-placeholder-count="7">
+      <div style="padding:14px 0;border-bottom:1px solid #806044;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px">
+        <div style="flex:1 1 170px;min-height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;line-height:1.3;letter-spacing:0.03em;text-transform:uppercase;color:#FFFFFF">{{ h.nome }}</span>
+          <label style="display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font-family:'Lato',sans-serif;font-size:14px;line-height:1.2;color:#FFFFFF"><input type="checkbox" checked="{{ h.atende }}" onChange="{{ h.setAtende }}" style="width:20px;height:20px;margin:0;accent-color:#B89570;cursor:pointer">Atende</label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 104px;opacity:{{ h.op }}"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Abre</span><input type="time" value="{{ h.abre }}" onChange="{{ h.setAbre }}" disabled="{{ h.off }}" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 104px;opacity:{{ h.op }}"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Fecha</span><input type="time" value="{{ h.fecha }}" onChange="{{ h.setFecha }}" disabled="{{ h.off }}" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 104px;opacity:{{ h.op }}"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Pausa</span><input type="time" value="{{ h.pi }}" onChange="{{ h.setPi }}" disabled="{{ h.off }}" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+        <label style="display:flex;flex-direction:column;gap:8px;flex:1 1 104px;opacity:{{ h.op }}"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Volta</span><input type="time" value="{{ h.pf }}" onChange="{{ h.setPf }}" disabled="{{ h.off }}" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+      </div>
+    </sc-for>
+    <h3 style="margin:32px 0 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Regras da agenda</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));align-items:end;gap:16px">
+      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Intervalo entre horários (min)</span><input type="number" value="{{ cIntervalo }}" onChange="{{ setCIntervalo }}" min="5" step="5" inputmode="numeric" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Dias liberados à frente</span><input type="number" value="{{ cDias }}" onChange="{{ setCDias }}" min="1" inputmode="numeric" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Antecedência mínima (horas)</span><input type="number" value="{{ cAnt }}" onChange="{{ setCAnt }}" min="0" inputmode="numeric" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+      <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#FFFFFF">Pedidos em aberto por cliente</span><input type="number" value="{{ cLimite }}" onChange="{{ setCLimite }}" min="1" inputmode="numeric" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+    </div>
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:6px"><sc-if value="{{ hHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ hErr }}</p></sc-if><sc-if value="{{ hHasMsg }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.5;color:#D2B18B">{{ hMsg }}</p></sc-if></div>
+    <button type="button" onClick="{{ salvarHorarios }}" disabled="{{ hBusy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;margin-top:20px;opacity:{{ hOp }}" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Salvar horários e regras</button>
+  </section>
+</div></sc-if>
+    </div></sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    mode: 'loading', cfg: {}, authReady: false, user: null, admin: null,
+    lEmail: '', lSenha: '', lErr: '', lBusy: false,
+    tab: 'agenda', page: 0, dia: null,
+    ags: [], blqs: [], servs: [], hors: [], conf: {},
+    done: {}, armed: null, busyId: null, agErr: '',
+    b: { dia: '', ate: '', ini: '', fim: '', motivo: '' }, bErr: '', bMsg: '', bBusy: false,
+    m: { serv: null, dia: '', hora: '', nome: '', whats: '' }, mErr: '', mMsg: '', mBusy: false,
+    drafts: {}, n: { nome: '', dur: '', valor: '' }, delArmed: null, sErr: '', sMsg: '',
+    hd: {}, cd: {}, hErr: '', hMsg: '', hBusy: false,
+  };
+  OFF = 3 * 36e5;
+  wd = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  wdLong = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+  mes = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  mesLong = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+
+  componentDidMount() { this.init(); }
+
+  componentWillUnmount() {
+    if (this.timer) clearInterval(this.timer);
+    if (this.onVis) document.removeEventListener('visibilitychange', this.onVis);
+    if (this.authSub) this.authSub.unsubscribe();
+  }
+
+  waitFor(fn, ms) {
+    return new Promise(res => {
+      const t0 = Date.now();
+      const tick = () => { let v = null; try { v = fn(); } catch (e) {} if (v) return res(v); if (Date.now() - t0 > ms) return res(null); setTimeout(tick, 50); };
+      tick();
+    });
+  }
+
+  async init() {
+    const cfg = (await this.waitFor(() => window.EMI_CONFIG, 3000)) || {};
+    const dia = this.today();
+    if (!(cfg.supabaseUrl && cfg.supabaseKey)) return this.setState({ cfg, mode: 'demo', authReady: true, dia });
+    if (!(await this.waitFor(() => window.supabase && window.supabase.createClient, 8000))) return this.setState({ cfg, mode: 'erro', authReady: true });
+    try {
+      this.sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+      this.setState({ cfg, mode: 'live', dia });
+      const sub = this.sb.auth.onAuthStateChange((ev, s) => setTimeout(() => this.setUser(s ? s.user : null), 0));
+      this.authSub = sub && sub.data && sub.data.subscription;
+      const r = await this.sb.auth.getSession();
+      await this.setUser(r.data && r.data.session ? r.data.session.user : null);
+    } catch (e) { return this.setState({ mode: 'erro', authReady: true }); }
+    this.onVis = () => { if (document.visibilityState === 'visible') this.load(); };
+    document.addEventListener('visibilitychange', this.onVis);
+    this.timer = setInterval(() => this.load(), 60000);
+  }
+
+  async setUser(u) {
+    if (!u) return this.setState({ user: null, admin: null, authReady: true, lBusy: false });
+    if (this.state.user && this.state.user.id === u.id && this.state.admin !== null) return;
+    this.setState({ user: { id: u.id, email: u.email }, authReady: true });
+    const r = await this.sb.rpc('eh_admin');
+    this.setState({ admin: !!r.data, lBusy: false, lSenha: '' });
+    if (r.data) this.load();
+  }
+
+  async entrar(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const email = this.state.lEmail.trim(), senha = this.state.lSenha;
+    if (!email || !senha) return this.setState({ lErr: 'Informe o e-mail e a senha.' });
+    this.setState({ lBusy: true, lErr: '' });
+    if (!this.sb) { this.loadDemo(); return this.setState({ lBusy: false, user: { id: 'demo', email }, admin: true }); }
+    const { error } = await this.sb.auth.signInWithPassword({ email, password: senha });
+    if (error) this.setState({ lBusy: false, lErr: /invalid/i.test(error.message || '') ? 'E-mail ou senha incorretos.' : 'Não foi possível entrar agora. Tente de novo.' });
+  }
+
+  entrarGoogle() { if (this.sb) this.sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } }); }
+
+  async sair() {
+    if (this.sb) { try { await this.sb.auth.signOut(); } catch (e) {} }
+    this.setState({ user: null, admin: null, ags: [], blqs: [], lSenha: '', lErr: '' });
+  }
+
+  async load() {
+    if (!this.sb || !this.state.admin) return;
+    const now = Date.now(), de = new Date(now - 21 * 864e5).toISOString(), ate = new Date(now + 150 * 864e5).toISOString();
+    const r = await Promise.all([
+      this.sb.from('agendamentos').select('*').gte('fim', de).lt('inicio', ate).order('inicio'),
+      this.sb.from('bloqueios').select('*').gte('fim', de).order('inicio'),
+      this.sb.from('servicos').select('*').order('ordem').order('id'),
+      this.sb.from('horarios').select('*').order('dia'),
+      this.sb.from('config').select('*').eq('id', 1).maybeSingle(),
+    ]);
+    if (r.some(x => x.error)) return this.setState({ agErr: 'Não foi possível atualizar a agenda. Confira a internet e tente de novo.' });
+    this.setState({ ags: r[0].data || [], blqs: r[1].data || [], servs: r[2].data || [], hors: r[3].data || [], conf: r[4].data || {}, agErr: '' });
+  }
+
+  loadDemo() {
+    const t = this.today(), d = n => this.add(t, n);
+    const ag = (id, n, hm, dur, servico, nome, whatsapp, status) => { const inicio = this.iso(d(n), hm); return { id, inicio, fim: new Date(Date.parse(inicio) + dur * 6e4).toISOString(), servico, nome, whatsapp, status, origem: 'site' }; };
+    const util = dia => ({ dia, abre: '09:00:00', fecha: '18:00:00', pausa_inicio: '12:00:00', pausa_fim: '13:00:00' });
+    this.setState({
+      ags: [
+        ag(1, 0, '09:00', 80, 'Lash lifting', 'Ana Paula Souza', '51999990001', 'confirmado'),
+        ag(2, 0, '14:00', 80, 'Manutenção volume brasileiro', 'Carla Mendes', '51999990002', 'confirmado'),
+        ag(3, 1, '10:00', 100, 'Aplicação volume 5D', 'Júlia Rocha', '51999990003', 'pendente'),
+        ag(4, 2, '13:00', 100, 'Aplicação fox eyes', 'Fernanda Lima', '51999990004', 'pendente'),
+        ag(5, 3, '09:00', 80, 'Manutenção fox eyes', 'Bruna Alves', '51999990005', 'confirmado'),
+      ],
+      blqs: [{ id: 1, inicio: this.iso(d(6), '00:00'), fim: this.iso(d(7), '00:00'), motivo: 'Folga' }],
+      servs: [['Aplicação volume brasileiro', 100, 150], ['Aplicação volume 5D', 100, 150], ['Aplicação fox eyes', 100, 150], ['Lash lifting', 80, 75], ['Manutenção volume brasileiro', 80, 80], ['Manutenção volume egípcio', 80, 80], ['Manutenção fox eyes', 80, 80], ['Ensaio fotográfico', 120, 200]].map((x, i) => ({ id: i + 1, nome: x[0], duracao: x[1], valor: x[2], ativo: true, ordem: i + 1 })),
+      hors: [{ dia: 0, abre: null, fecha: null, pausa_inicio: null, pausa_fim: null }, util(1), util(2), util(3), util(4), util(5), { dia: 6, abre: '09:00:00', fecha: '13:00:00', pausa_inicio: null, pausa_fim: null }],
+      conf: { id: 1, intervalo: 30, dias_frente: 30, antecedencia_horas: 12, limite_por_cliente: 2 },
+    });
+  }
+
+  today() { return new Date(Date.now() - this.OFF).toISOString().slice(0, 10); }
+  add(ymd, n) { const d = new Date(ymd + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+  iso(ymd, hm) { return ymd + 'T' + hm + ':00-03:00'; }
+  wall(iso) { const ms = Date.parse(iso) - this.OFF, d = new Date(ms); return { ymd: d.toISOString().slice(0, 10), min: d.getUTCHours() * 60 + d.getUTCMinutes(), dow: d.getUTCDay() }; }
+  dow(ymd) { return new Date(ymd + 'T12:00:00Z').getUTCDay(); }
+  fmtDia(ymd) { return this.wd[this.dow(ymd)] + ', ' + ymd.slice(8, 10) + '/' + ymd.slice(5, 7); }
+  hhmm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+  up(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  sortIni(list) { return list.slice().sort((x, y) => Date.parse(x.inicio) - Date.parse(y.inicio)); }
+  parseNum(v) { const t = String(v == null ? '' : v).trim(); if (!t) return null; const n = parseFloat(t.replace(/[^\d,.-]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.')); return isNaN(n) ? null : Math.round(n * 100) / 100; }
+  fmtNum(v) { return v == null || v === '' ? '' : Number(v).toFixed(2).replace('.', ','); }
+  normPhone(v) {
+    let d = String(v || '').replace(/\D/g, '').replace(/^0+/, '');
+    if (d.length > 11 && d.indexOf('55') === 0) d = d.slice(2);
+    return d.slice(0, 11);
+  }
+
+  validPhone(d) { return /^[1-9]{2}(9\d{8}|[2-9]\d{7})$/.test(d); }
+
+  maskPhone(v) {
+    const d = this.normPhone(v);
+    if (!d) return '';
+    if (d.length <= 2) return '(' + d;
+    if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+    return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+  }
+
+  waLink(a) {
+    const n = this.normPhone(a.whatsapp);
+    if (!this.validPhone(n)) return '';
+    const w = this.wall(a.inicio), quando = this.wdLong[w.dow] + ', ' + this.fmtDia(w.ymd).slice(5) + ', às ' + this.hhmm(w.min);
+    const nome = String(a.nome || '').trim().split(' ')[0];
+    const txt = a.status === 'confirmado'
+      ? 'Olá, ' + nome + '! Seu horário de ' + a.servico + ' está confirmado para ' + quando + '. Endereço: Centro Clínico UNIMED, R. Jacob Becker, 1351, Centro, Venâncio Aires. Até lá!'
+      : a.status === 'cancelado'
+        ? 'Olá, ' + nome + '! Infelizmente não vou conseguir atender o seu horário de ' + a.servico + ' (' + quando + '). Pode escolher outro horário pelo site?'
+        : 'Olá, ' + nome + '! Recebi o seu pedido de ' + a.servico + ' para ' + quando + '.';
+    return 'https://wa.me/55' + n + '?text=' + encodeURIComponent(txt);
+  }
+
+  agItem(a, withDate) {
+    const st = this.state, w = this.wall(a.inicio), wf = this.wall(a.fim);
+    const pend = a.status === 'pendente', canc = a.status === 'cancelado', armed = st.armed === a.id, busy = st.busyId === a.id;
+    const wa = this.waLink(a), num = this.normPhone(a.whatsapp), fone = num ? this.maskPhone(num) + (this.validPhone(num) ? '' : ' (número incompleto)') : '';
+    return {
+      isAg: true, isBloq: false,
+      hora: (withDate ? this.fmtDia(w.ymd) + ' · ' : '') + this.hhmm(w.min) + ' – ' + this.hhmm(wf.min),
+      servico: a.servico, nome: a.nome + (a.origem === 'manual' ? ' (lançado)' : ''), hasFone: !!fone, fone,
+      status: pend ? 'Aguardando' : canc ? 'Cancelado' : 'Confirmado',
+      cor: pend ? '#B89570' : canc ? '#99918A' : '#FFFFFF',
+      bd: pend ? '#B89570' : '#111111', op: canc ? 0.6 : 1,
+      podeConfirmar: pend, podeCancelar: !canc, busy,
+      confirmLabel: busy ? 'Salvando…' : 'Confirmar',
+      cancelLabel: armed ? (pend ? 'Confirmar recusa' : 'Confirmar cancelamento') : (pend ? 'Recusar' : 'Cancelar'),
+      confirmar: () => this.setStatus(a, 'confirmado'),
+      cancelar: () => (armed ? this.setStatus(a, 'cancelado') : this.setState({ armed: a.id })),
+      hasWa: !!wa, waLink: wa, waLabel: a.status === 'confirmado' ? 'Enviar confirmação' : canc ? 'Avisar cliente' : 'WhatsApp',
+    };
+  }
+
+  async setStatus(a, status) {
+    this.setState({ busyId: a.id, agErr: '' });
+    if (this.sb) {
+      const { error } = await this.sb.from('agendamentos').update({ status }).eq('id', a.id);
+      if (error) return this.setState({ busyId: null, armed: null, agErr: 'Não foi possível salvar. Tente de novo.' });
+    }
+    this.setState(s => ({
+      busyId: null, armed: null,
+      done: a.status === 'pendente' ? Object.assign({}, s.done, { [a.id]: true }) : s.done,
+      ags: s.ags.map(x => (x.id === a.id ? Object.assign({}, x, { status }) : x)),
+    }));
+  }
+
+  async bloquear(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const b = this.state.b;
+    if (!b.dia) return this.setState({ bErr: 'Escolha o dia.' });
+    const ate = b.ate && b.ate > b.dia ? b.ate : b.dia;
+    if (!!b.ini !== !!b.fim) return this.setState({ bErr: 'Preencha os dois horários ou deixe os dois em branco.' });
+    if (b.ini && b.fim <= b.ini) return this.setState({ bErr: 'O horário final precisa ser depois do inicial.' });
+    const motivo = b.motivo.trim(), rows = [];
+    if (!b.ini) rows.push({ inicio: this.iso(b.dia, '00:00'), fim: this.iso(this.add(ate, 1), '00:00'), motivo });
+    else for (let d = b.dia; d <= ate && rows.length < 93; d = this.add(d, 1)) rows.push({ inicio: this.iso(d, b.ini.slice(0, 5)), fim: this.iso(d, b.fim.slice(0, 5)), motivo });
+    this.setState({ bBusy: true, bErr: '', bMsg: '' });
+    let saved = rows.map((r, i) => Object.assign({ id: Date.now() + i }, r));
+    if (this.sb) {
+      const r = await this.sb.from('bloqueios').insert(rows).select();
+      if (r.error) return this.setState({ bBusy: false, bErr: 'Não foi possível bloquear. Tente de novo.' });
+      saved = r.data || [];
+    }
+    this.setState(s => ({ bBusy: false, blqs: this.sortIni(s.blqs.concat(saved)), b: { dia: '', ate: '', ini: '', fim: '', motivo: '' }, bMsg: 'Bloqueio salvo. Esses horários não aparecem mais no site.' }));
+  }
+
+  async desbloquear(b) {
+    if (this.sb) {
+      const { error } = await this.sb.from('bloqueios').delete().eq('id', b.id);
+      if (error) return this.setState({ agErr: 'Não foi possível desbloquear. Tente de novo.' });
+    }
+    this.setState(s => ({ blqs: s.blqs.filter(x => x.id !== b.id) }));
+  }
+
+  async lancar(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const m = this.state.m, s = this.state.servs.find(x => x.id === m.serv);
+    if (!s) return this.setState({ mErr: 'Escolha o serviço.' });
+    if (!m.dia || !m.hora) return this.setState({ mErr: 'Escolha o dia e o horário.' });
+    if (m.nome.trim().length < 2) return this.setState({ mErr: 'Informe o nome da cliente.' });
+    if (m.whats.trim() && !this.validPhone(this.normPhone(m.whats))) return this.setState({ mErr: 'Confira o WhatsApp: DDD e número, como (51) 99999-9999.' });
+    const inicio = this.iso(m.dia, m.hora.slice(0, 5)), ini = Date.parse(inicio), fim = new Date(ini + (+s.duracao || 60) * 6e4).toISOString();
+    if (this.state.ags.some(a => a.status !== 'cancelado' && Date.parse(a.inicio) < Date.parse(fim) && Date.parse(a.fim) > ini)) return this.setState({ mErr: 'Já existe um atendimento nesse horário.' });
+    const row = { nome: m.nome.trim(), whatsapp: this.normPhone(m.whats), servico: s.nome, valor: s.valor, inicio, fim, status: 'confirmado', origem: 'manual' };
+    this.setState({ mBusy: true, mErr: '', mMsg: '' });
+    let saved = Object.assign({ id: Date.now() }, row);
+    if (this.sb) {
+      const r = await this.sb.from('agendamentos').insert(row).select().single();
+      if (r.error) return this.setState({ mBusy: false, mErr: r.error.code === '23P01' ? 'Já existe um atendimento nesse horário.' : 'Não foi possível salvar. Tente de novo.' });
+      saved = r.data;
+    }
+    this.setState(st => ({ mBusy: false, ags: this.sortIni(st.ags.concat([saved])), m: { serv: null, dia: '', hora: '', nome: '', whats: '' }, mMsg: 'Atendimento lançado. O horário já aparece ocupado no site.' }));
+  }
+
+  draft(id, k, val) { this.setState(s => ({ drafts: Object.assign({}, s.drafts, { [id]: Object.assign({}, s.drafts[id], { [k]: val }) }), sErr: '', sMsg: '', delArmed: null })); }
+
+  async salvarServ(s) {
+    const d = this.state.drafts[s.id] || {}, patch = {};
+    if (d.nome !== undefined) { if (d.nome.trim().length < 2) return this.setState({ sErr: 'Informe o nome do serviço.' }); patch.nome = d.nome.trim(); }
+    if (d.duracao !== undefined) { const n = parseInt(d.duracao, 10); if (!(n >= 5 && n <= 600)) return this.setState({ sErr: 'A duração precisa ficar entre 5 e 600 minutos.' }); patch.duracao = n; }
+    if (d.valor !== undefined) { const n = this.parseNum(d.valor); if (String(d.valor).trim() && n == null) return this.setState({ sErr: 'Confira o valor.' }); patch.valor = n; }
+    if (d.ativo !== undefined) patch.ativo = !!d.ativo;
+    if (this.sb) { const r = await this.sb.from('servicos').update(patch).eq('id', s.id); if (r.error) return this.setState({ sErr: 'Não foi possível salvar. Tente de novo.' }); }
+    this.setState(st => { const drafts = Object.assign({}, st.drafts); delete drafts[s.id]; return { drafts, sErr: '', sMsg: 'Serviço salvo.', servs: st.servs.map(x => (x.id === s.id ? Object.assign({}, x, patch) : x)) }; });
+  }
+
+  async excluirServ(s) {
+    if (this.state.delArmed !== s.id) return this.setState({ delArmed: s.id, sMsg: '', sErr: '' });
+    if (this.sb) { const r = await this.sb.from('servicos').delete().eq('id', s.id); if (r.error) return this.setState({ delArmed: null, sErr: 'Não foi possível excluir. Tente de novo.' }); }
+    this.setState(st => ({ delArmed: null, servs: st.servs.filter(x => x.id !== s.id), sMsg: 'Serviço excluído.' }));
+  }
+
+  async novoServ(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const n = this.state.n, nome = n.nome.trim(), dur = parseInt(n.dur, 10), valor = this.parseNum(n.valor);
+    if (nome.length < 2) return this.setState({ sErr: 'Informe o nome do novo serviço.' });
+    if (!(dur >= 5 && dur <= 600)) return this.setState({ sErr: 'Informe a duração em minutos (de 5 a 600).' });
+    const row = { nome, duracao: dur, valor, ativo: true, ordem: this.state.servs.reduce((m, s) => Math.max(m, s.ordem || 0), 0) + 1 };
+    let saved = Object.assign({ id: Date.now() }, row);
+    if (this.sb) {
+      const r = await this.sb.from('servicos').insert(row).select().single();
+      if (r.error) return this.setState({ sErr: 'Não foi possível adicionar. Tente de novo.' });
+      saved = r.data;
+    }
+    this.setState(s => ({ servs: s.servs.concat([saved]), n: { nome: '', dur: '', valor: '' }, sErr: '', sMsg: 'Serviço adicionado.' }));
+  }
+
+  horVal(dia) {
+    const base = this.state.hors.find(h => +h.dia === dia) || { dia };
+    const d = this.state.hd[dia] || {};
+    const g = k => (d[k] !== undefined ? d[k] : base[k] ? String(base[k]).slice(0, 5) : '');
+    return { atende: d.atende !== undefined ? d.atende : !!(base.abre && base.fecha), abre: g('abre'), fecha: g('fecha'), pausa_inicio: g('pausa_inicio'), pausa_fim: g('pausa_fim') };
+  }
+
+  setH(dia, k, val) { this.setState(s => ({ hd: Object.assign({}, s.hd, { [dia]: Object.assign({}, s.hd[dia], { [k]: val }) }), hMsg: '', hErr: '' })); }
+
+  confVal(k) { const d = this.state.cd; return d[k] !== undefined ? d[k] : this.state.conf[k] == null ? '' : String(this.state.conf[k]); }
+
+  async salvarHorarios() {
+    const rows = [];
+    for (let dia = 0; dia < 7; dia++) {
+      const h = this.horVal(dia), nome = this.up(this.wdLong[dia]);
+      if (!h.atende) { rows.push({ dia, abre: null, fecha: null, pausa_inicio: null, pausa_fim: null }); continue; }
+      if (!h.abre || !h.fecha || h.fecha <= h.abre) return this.setState({ hErr: nome + ': confira os horários de abertura e fechamento.' });
+      if ((h.pausa_inicio || h.pausa_fim) && (!h.pausa_inicio || !h.pausa_fim || h.pausa_fim <= h.pausa_inicio || h.pausa_inicio < h.abre || h.pausa_fim > h.fecha)) return this.setState({ hErr: nome + ': confira o horário da pausa.' });
+      rows.push({ dia, abre: h.abre, fecha: h.fecha, pausa_inicio: h.pausa_inicio || null, pausa_fim: h.pausa_fim || null });
+    }
+    const conf = {}, lim = { intervalo: [5, 240], dias_frente: [1, 365], antecedencia_horas: [0, 720], limite_por_cliente: [1, 20] };
+    for (const k in lim) {
+      const n = parseInt(this.confVal(k), 10);
+      if (isNaN(n) || n < lim[k][0] || n > lim[k][1]) return this.setState({ hErr: 'Confira as regras da agenda (valores entre ' + lim[k][0] + ' e ' + lim[k][1] + ').' });
+      conf[k] = n;
+    }
+    this.setState({ hBusy: true, hErr: '', hMsg: '' });
+    if (this.sb) {
+      const a = await this.sb.from('horarios').upsert(rows, { onConflict: 'dia' });
+      const c = a.error ? a : await this.sb.from('config').update(conf).eq('id', 1);
+      if (c.error) return this.setState({ hBusy: false, hErr: 'Não foi possível salvar. Tente de novo.' });
+    }
+    this.setState(s => ({ hBusy: false, hd: {}, cd: {}, hors: rows, conf: Object.assign({}, s.conf, conf), hMsg: 'Salvo. O site já usa os novos horários.' }));
+  }
+
+  renderVals() {
+    const st = this.state, now = Date.now(), v = {};
+    const live = st.mode === 'live', demo = st.mode === 'demo';
+    v.demo = demo;
+    v.loading = st.mode === 'loading' || !st.authReady || (!!st.user && st.admin === null);
+    v.erro = st.mode === 'erro';
+    v.showLogin = (live || demo) && st.authReady && !st.user;
+    v.notAdmin = !!st.user && st.admin === false;
+    v.isAdmin = !!st.user && st.admin === true;
+    v.logged = !!st.user;
+    v.email = st.user ? st.user.email : '';
+    v.sair = () => this.sair();
+    v.lEmail = st.lEmail; v.lSenha = st.lSenha;
+    v.setLEmail = e => this.setState({ lEmail: e.target.value, lErr: '' });
+    v.setLSenha = e => this.setState({ lSenha: e.target.value, lErr: '' });
+    v.entrar = e => this.entrar(e);
+    v.lHasErr = !!st.lErr; v.lErr = st.lErr; v.lBusy = st.lBusy; v.lOp = st.lBusy ? 0.6 : 1; v.lBtn = st.lBusy ? 'Entrando…' : 'Entrar';
+    v.hasGoogle = live && !!st.cfg.loginGoogle;
+    v.entrarGoogle = () => this.entrarGoogle();
+
+    const t = this.today(), hr = new Date(now - this.OFF).getUTCHours();
+    v.saudacao = (hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite') + ', Emi';
+    v.hojeTxt = this.up(this.wdLong[this.dow(t)]) + ', ' + (+t.slice(8, 10)) + ' de ' + this.mesLong[+t.slice(5, 7) - 1];
+
+    const nPend = st.ags.filter(a => a.status === 'pendente' && Date.parse(a.fim) > now).length;
+    const T = [['agenda', 'Agenda'], ['bloquear', 'Bloquear horários'], ['lancar', 'Lançar atendimento'], ['ajustes', 'Serviços e horários']];
+    v.tabs = T.map(([k, label]) => ({ label: k === 'agenda' && nPend ? label + ' (' + nPend + ')' : label, on: st.tab === k, sel: String(st.tab === k), fg: st.tab === k ? '#FFFFFF' : '#99918A', go: () => this.setState({ tab: k, armed: null, delArmed: null }) }));
+    v.tabAgenda = st.tab === 'agenda'; v.tabBloq = st.tab === 'bloquear'; v.tabLancar = st.tab === 'lancar'; v.tabAjustes = st.tab === 'ajustes';
+    v.hasAgErr = !!st.agErr; v.agErr = st.agErr;
+
+    v.pend = st.ags.filter(a => (a.status === 'pendente' || st.done[a.id]) && Date.parse(a.fim) > now).map(a => this.agItem(a, true));
+    v.noPend = v.pend.length === 0;
+
+    const t0 = this.add(t, st.page * 7), dia = st.dia || t;
+    v.dias = [];
+    for (let i = 0; i < 7; i++) {
+      const ymd = this.add(t0, i), on = ymd === dia, dw = this.dow(ymd);
+      const n = st.ags.filter(a => a.status !== 'cancelado' && this.wall(a.inicio).ymd === ymd).length;
+      v.dias.push({ wd: this.wd[dw], num: String(+ymd.slice(8, 10)), qtd: n ? String(n) : '', fg: on ? '#050505' : '#FFFFFF', bg: on ? '#B89570' : 'transparent', bd: on ? '#B89570' : '#806044', sub: on ? '#050505' : '#B89570', pressed: String(on), aria: this.wdLong[dw] + ', ' + (+ymd.slice(8, 10)) + ' de ' + this.mesLong[+ymd.slice(5, 7) - 1] + (n ? ', ' + n + ' atendimentos' : ''), pick: () => this.setState({ dia: ymd, armed: null }) });
+    }
+    const t6 = this.add(t0, 6), m0 = +t0.slice(5, 7) - 1, m6 = +t6.slice(5, 7) - 1;
+    v.mesTxt = m0 === m6 ? this.mesLong[m0] + ' ' + t0.slice(0, 4) : this.mes[m0] + ' – ' + this.mes[m6] + ' ' + t6.slice(0, 4);
+    v.prev = () => this.setState(s => ({ page: Math.max(-3, s.page - 1) }));
+    v.next = () => this.setState(s => ({ page: Math.min(20, s.page + 1) }));
+    v.prevDis = st.page <= -3; v.nextDis = st.page >= 20;
+    v.prevOp = v.prevDis ? 0.35 : 1; v.nextOp = v.nextDis ? 0.35 : 1;
+    v.diaTitulo = this.up(this.wdLong[this.dow(dia)]) + ', ' + (+dia.slice(8, 10)) + ' de ' + this.mesLong[+dia.slice(5, 7) - 1];
+    const ds = Date.parse(dia + 'T00:00:00-03:00'), dz = ds + 864e5;
+    v.itens = st.ags.filter(a => this.wall(a.inicio).ymd === dia).map(a => Object.assign({ k: Date.parse(a.inicio) }, this.agItem(a, false)))
+      .concat(st.blqs.filter(b => Date.parse(b.inicio) < dz && Date.parse(b.fim) > ds).map(b => {
+        const a = Math.max(ds, Date.parse(b.inicio)), z = Math.min(dz, Date.parse(b.fim));
+        return { k: a, isAg: false, isBloq: true, hora: a === ds && z === dz ? 'Dia inteiro' : this.hhmm((a - ds) / 6e4) + ' – ' + this.hhmm((z - ds) / 6e4), motivo: b.motivo || 'sem motivo', remover: () => this.desbloquear(b) };
+      }))
+      .sort((x, y) => x.k - y.k);
+    v.diaVazio = v.itens.length === 0;
+
+    const b = st.b, setB = k => e => { const val = e.target.value; this.setState(s => ({ b: Object.assign({}, s.b, { [k]: val }), bErr: '', bMsg: '' })); };
+    v.bDia = b.dia; v.bAte = b.ate; v.bIni = b.ini; v.bFim = b.fim; v.bMotivo = b.motivo;
+    v.setBDia = setB('dia'); v.setBAte = setB('ate'); v.setBIni = setB('ini'); v.setBFim = setB('fim'); v.setBMotivo = setB('motivo');
+    v.bloquear = e => this.bloquear(e);
+    v.bHasErr = !!st.bErr; v.bErr = st.bErr; v.bHasMsg = !!st.bMsg; v.bMsg = st.bMsg; v.bBusy = st.bBusy; v.bOp = st.bBusy ? 0.6 : 1;
+    v.bloqs = st.blqs.filter(x => Date.parse(x.fim) > now).map(x => {
+      const a = this.wall(x.inicio), zf = this.wall(x.fim), zl = this.wall(new Date(Date.parse(x.fim) - 1).toISOString());
+      const quando = a.min === 0 && zf.min === 0
+        ? (a.ymd === zl.ymd ? this.fmtDia(a.ymd) + ' · dia inteiro' : this.fmtDia(a.ymd) + ' até ' + this.fmtDia(zl.ymd))
+        : this.fmtDia(a.ymd) + ' · ' + this.hhmm(a.min) + ' – ' + this.hhmm(zf.min);
+      return { quando, motivo: x.motivo || 'Sem motivo', remover: () => this.desbloquear(x) };
+    });
+    v.noBloqs = v.bloqs.length === 0;
+
+    const m = st.m, setM = k => e => { const val = k === 'whats' ? this.maskPhone(e.target.value) : e.target.value; this.setState(s => ({ m: Object.assign({}, s.m, { [k]: val }), mErr: '', mMsg: '' })); };
+    v.mDia = m.dia; v.mHora = m.hora; v.mNome = m.nome; v.mWhats = m.whats;
+    v.setMDia = setM('dia'); v.setMHora = setM('hora'); v.setMNome = setM('nome'); v.setMWhats = setM('whats');
+    v.mServs = st.servs.map(s => { const on = m.serv === s.id; return { nome: s.nome, pressed: String(on), fg: on ? '#050505' : '#FFFFFF', bg: on ? '#B89570' : 'transparent', bd: on ? '#B89570' : '#806044', pick: () => this.setState(x => ({ m: Object.assign({}, x.m, { serv: s.id }), mErr: '' })) }; });
+    v.lancar = e => this.lancar(e);
+    v.mHasErr = !!st.mErr; v.mErr = st.mErr; v.mHasMsg = !!st.mMsg; v.mMsg = st.mMsg; v.mBusy = st.mBusy; v.mOp = st.mBusy ? 0.6 : 1;
+
+    v.servRows = st.servs.map(s => {
+      const d = st.drafts[s.id] || {}, g = (k, def) => (d[k] !== undefined ? d[k] : def);
+      return {
+        nome: g('nome', s.nome || ''), duracao: g('duracao', s.duracao == null ? '' : String(s.duracao)), valor: g('valor', this.fmtNum(s.valor)), ativo: g('ativo', !!s.ativo),
+        setNome: e => this.draft(s.id, 'nome', e.target.value), setDur: e => this.draft(s.id, 'duracao', e.target.value), setValor: e => this.draft(s.id, 'valor', e.target.value), setAtivo: e => this.draft(s.id, 'ativo', e.target.checked),
+        dirty: Object.keys(d).length > 0, salvar: () => this.salvarServ(s), excluir: () => this.excluirServ(s), excluirLabel: st.delArmed === s.id ? 'Confirmar exclusão' : 'Excluir',
+      };
+    });
+    const setN = k => e => { const val = e.target.value; this.setState(s => ({ n: Object.assign({}, s.n, { [k]: val }), sErr: '', sMsg: '' })); };
+    v.nNome = st.n.nome; v.nDur = st.n.dur; v.nValor = st.n.valor;
+    v.setNNome = setN('nome'); v.setNDur = setN('dur'); v.setNValor = setN('valor');
+    v.novoServ = e => this.novoServ(e);
+    v.sHasErr = !!st.sErr; v.sErr = st.sErr; v.sHasMsg = !!st.sMsg; v.sMsg = st.sMsg;
+
+    v.horRows = [1, 2, 3, 4, 5, 6, 0].map(dia => {
+      const h = this.horVal(dia), set = k => e => this.setH(dia, k, k === 'atende' ? e.target.checked : e.target.value);
+      return { nome: this.up(this.wdLong[dia]), atende: h.atende, off: !h.atende, op: h.atende ? 1 : 0.4, abre: h.abre, fecha: h.fecha, pi: h.pausa_inicio, pf: h.pausa_fim, setAtende: set('atende'), setAbre: set('abre'), setFecha: set('fecha'), setPi: set('pausa_inicio'), setPf: set('pausa_fim') };
+    });
+    const setC = k => e => { const val = e.target.value; this.setState(s => ({ cd: Object.assign({}, s.cd, { [k]: val }), hErr: '', hMsg: '' })); };
+    v.cIntervalo = this.confVal('intervalo'); v.cDias = this.confVal('dias_frente'); v.cAnt = this.confVal('antecedencia_horas'); v.cLimite = this.confVal('limite_por_cliente');
+    v.setCIntervalo = setC('intervalo'); v.setCDias = setC('dias_frente'); v.setCAnt = setC('antecedencia_horas'); v.setCLimite = setC('limite_por_cliente');
+    v.salvarHorarios = () => this.salvarHorarios();
+    v.hHasErr = !!st.hErr; v.hErr = st.hErr; v.hHasMsg = !!st.hMsg; v.hMsg = st.hMsg; v.hBusy = st.hBusy; v.hOp = st.hBusy ? 0.6 : 1;
+    return v;
+  }
+}
+</script>
+</body>
+</html>

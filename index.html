@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Emi Santos · Lash Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&amp;family=Lato:wght@400;700&amp;family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="./image-slot.js"></script>
+  <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#050505}
+    body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    a{color:#B89570;text-decoration:none}
+    a:hover{color:#D2B18B}
+    :focus-visible{outline:2px solid #B89570;outline-offset:4px}
+    ::selection{background:#B89570;color:#050505}
+  </style>
+</helmet>
+<div style="background:#050505;color:#FFFFFF;font-family:'Lato',sans-serif;min-height:100vh">
+
+  <header style="position:sticky;top:0;z-index:50;background:#050505;border-bottom:1px solid #111111">
+    <div style="width:min(90%,1120px);height:76px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px">
+      <a href="#inicio" onClick="{{ goInicio }}" aria-label="Emi Santos, voltar ao início" style="display:flex;flex-direction:column;align-items:flex-start;text-decoration:none">
+        <span style="font-family:'Allura',cursive;font-size:34px;line-height:1;color:#B89570">Emi Santos</span>
+        <span style="margin-top:3px;padding-left:2px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:500;line-height:1;letter-spacing:0.32em;text-transform:uppercase;color:#99918A">Lash Designer</span>
+      </a>
+      <sc-if value="{{ isWide }}" hint-placeholder-val="{{ true }}">
+        <nav aria-label="Principal" style="display:flex;align-items:center;gap:28px">
+          <a href="#sobre" onClick="{{ goSobre }}" aria-current="{{ curSobre }}" style="position:relative;padding:14px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;transition:color 250ms ease" style-hover="color:#D2B18B">Sobre<sc-if value="{{ onSobre }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:5px;height:1px;background:#B89570"></span></sc-if></a>
+          <a href="#servicos" onClick="{{ goServicos }}" aria-current="{{ curServicos }}" style="position:relative;padding:14px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;transition:color 250ms ease" style-hover="color:#D2B18B">Serviços<sc-if value="{{ onServicos }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:5px;height:1px;background:#B89570"></span></sc-if></a>
+          <a href="#trabalhos" onClick="{{ goTrabalhos }}" aria-current="{{ curTrabalhos }}" style="position:relative;padding:14px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;transition:color 250ms ease" style-hover="color:#D2B18B">Trabalhos<sc-if value="{{ onTrabalhos }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:5px;height:1px;background:#B89570"></span></sc-if></a>
+          <a href="#cuidados" onClick="{{ goCuidados }}" aria-current="{{ curCuidados }}" style="position:relative;padding:14px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;transition:color 250ms ease" style-hover="color:#D2B18B">Cuidados<sc-if value="{{ onCuidados }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:5px;height:1px;background:#B89570"></span></sc-if></a>
+          <a href="#duvidas" onClick="{{ goDuvidas }}" aria-current="{{ curDuvidas }}" style="position:relative;padding:14px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;transition:color 250ms ease" style-hover="color:#D2B18B">Dúvidas<sc-if value="{{ onDuvidas }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:5px;height:1px;background:#B89570"></span></sc-if></a>
+          <a href="#contato" onClick="{{ goContato }}" aria-current="{{ curContato }}" style="position:relative;padding:14px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF;text-decoration:none;transition:color 250ms ease" style-hover="color:#D2B18B">Contato<sc-if value="{{ onContato }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:5px;height:1px;background:#B89570"></span></sc-if></a>
+          <sc-if value="{{ showHeaderCta }}" hint-placeholder-val="{{ true }}">
+            <a href="#agendar" onClick="{{ goAgendar }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;margin-left:8px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Agendar</a>
+          </sc-if>
+        </nav>
+      </sc-if>
+      <sc-if value="{{ isNarrow }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px">
+          <sc-if value="{{ showHeaderCta }}" hint-placeholder-val="{{ true }}">
+            <a href="#agendar" onClick="{{ goAgendar }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Agendar</a>
+          </sc-if>
+          <button type="button" onClick="{{ openMenu }}" aria-label="Abrir menu" aria-expanded="{{ menuOpenAttr }}" style="width:44px;height:44px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:transparent;border:1px solid #B89570;cursor:pointer;transition:border-color 250ms ease" style-hover="border-color:#D2B18B">
+            <span style="display:block;width:20px;height:1px;background:#FFFFFF"></span>
+            <span style="display:block;width:20px;height:1px;background:#FFFFFF"></span>
+            <span style="display:block;width:20px;height:1px;background:#FFFFFF"></span>
+          </button>
+        </div>
+      </sc-if>
+    </div>
+  </header>
+
+  <section id="inicio" data-screen-label="01 Início" style="position:relative;background:#050505;color:#FFFFFF;scroll-margin-top:76px">
+    <div style="display:flex;flex-wrap:wrap-reverse;align-items:stretch;min-height:clamp(560px, calc(100vh - 76px), 760px)">
+      <div style="flex:1.6 1 380px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:64px 5% 136px max(5%, calc((100% - 1120px) / 2))">
+        <p style="margin:0 0 6px;font-family:'Allura',cursive;font-size:clamp(26px,2.8vw,32px);font-weight:400;line-height:1.2;color:#B89570">Seja bem-vinda</p>
+        <h1 style="margin:0 0 36px;max-width:11em;font-family:'Montserrat',sans-serif;font-size:clamp(32px,4vw,48px);font-weight:700;line-height:1.1;letter-spacing:-0.03em;color:#FFFFFF;text-wrap:balance">Cílios que realçam o seu olhar</h1>
+        <a href="#agendar" onClick="{{ goAgendar }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Agendar horário</a>
+      </div>
+      <div style="flex:1 1 420px;position:relative;min-height:440px;background:#050505">
+        <image-slot id="hero-foto" src="assets/emi-perfil.jpg" shape="rect" placeholder="Foto principal: close-up dos cílios" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        <sc-if value="{{ heroSide }}" hint-placeholder-val="{{ true }}">
+          <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#050505 0%,rgba(5,5,5,0.78) 8%,rgba(5,5,5,0.42) 17%,rgba(5,5,5,0.14) 27%,rgba(5,5,5,0) 38%)"></div>
+        </sc-if>
+        <sc-if value="{{ heroStacked }}" hint-placeholder-val="{{ false }}">
+          <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,#050505 0%,rgba(5,5,5,0.75) 10%,rgba(5,5,5,0.3) 22%,rgba(5,5,5,0) 35%)"></div>
+        </sc-if>
+      </div>
+    </div>
+    <sc-if value="{{ diagonal }}" hint-placeholder-val="{{ true }}">
+      <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:-1px;z-index:2;height:clamp(28px,5vw,72px);background:#FFFFFF;clip-path:polygon(0 0,100% 100%,0 100%);pointer-events:none"></div>
+    </sc-if>
+    <a href="#sobre" onClick="{{ goSobre }}" aria-label="Rolar até Sobre" style="position:absolute;left:max(5%, calc((100% - 1120px) / 2));bottom:-40px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none">
+      <span style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:500;line-height:1;letter-spacing:0.12em;text-transform:uppercase;color:#FFFFFF">Mais</span>
+      <span style="display:block;width:1px;height:76px;background:#99918A"></span>
+    </a>
+  </section>
+
+  <section id="sobre" data-screen-label="02 Sobre" style="position:relative;background:#FFFFFF;color:#111111;padding:clamp(88px,10vw,128px) 0 clamp(72px,9vw,112px);scroll-margin-top:76px">
+    <div style="width:min(90%,1120px);margin:0 auto">
+      <div style="margin-bottom:clamp(40px,5vw,64px);text-align:center">
+        <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#806044">Prazer, eu sou a Emi</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#050505">Sobre mim</h2>
+      </div>
+      <div style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));align-items:center;gap:clamp(48px,7vw,96px)">
+        <div style="position:relative;justify-self:center;width:calc(100% - 16px);max-width:400px;margin-left:16px;aspect-ratio:4/5">
+          <div aria-hidden="true" style="position:absolute;top:16px;right:16px;bottom:-16px;left:-16px;border:1px solid #B89570"></div>
+          <image-slot id="sobre-foto" src="assets/emi-estudio.jpg" shape="rect" placeholder="Retrato da Emi no estúdio" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        </div>
+        <div style="max-width:460px;display:flex;flex-direction:column;align-items:flex-start;gap:16px">
+          <p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Sou lash designer e meu trabalho é criar cílios que combinam com o formato dos seus olhos e com o seu estilo, do efeito mais natural ao mais marcante.</p>
+          <p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Cada atendimento começa com uma conversa sobre o que você procura, para que o resultado fique leve, confortável e com a sua cara.</p>
+          <a href="#servicos" onClick="{{ goServicos }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin-top:16px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#050505;background:#FFFFFF;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Ver serviços</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="agendar" data-screen-label="03 Agendamento" style="background:#050505;color:#FFFFFF;padding:clamp(80px,10vw,120px) 0;scroll-margin-top:76px">
+    <div style="width:min(90%,1120px);margin:0 auto">
+      <div style="margin-bottom:clamp(40px,5vw,56px);text-align:center">
+        <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#B89570">Vamos agendar?</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#FFFFFF">Agende seu horário</h2>
+        <p style="margin:20px auto 0;max-width:46ch;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Escolha o serviço, o dia e o horário livre. Para confirmar, entre na sua conta ou crie uma.</p>
+      </div>
+      <div style="max-width:1040px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));align-items:start;gap:clamp(36px,4vw,56px)">
+        <div style="min-width:0;display:flex;flex-direction:column;gap:36px">
+          <div>
+            <p style="margin:0 0 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">1. Serviço</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:8px">
+              <sc-for list="{{ agServicos }}" as="s" hint-placeholder-count="6">
+                <button type="button" onClick="{{ s.pick }}" aria-pressed="{{ s.pressed }}" style="min-height:64px;padding:12px 16px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;text-align:left;cursor:pointer;color:{{ s.fg }};background:{{ s.bg }};border:1px solid {{ s.bd }};transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="border-color:#D2B18B">
+                  <span style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;line-height:1.3;letter-spacing:0.03em;text-transform:uppercase">{{ s.nome }}</span>
+                  <span style="font-family:'Lato',sans-serif;font-size:13px;line-height:1.3;color:{{ s.sub }}">{{ s.info }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+              <p style="margin:0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">2. Dia<span style="margin-left:10px;font-weight:500;letter-spacing:0;text-transform:none;color:#99918A">{{ agMes }}</span></p>
+              <div style="display:flex;gap:8px">
+                <button type="button" onClick="{{ agPrev }}" disabled="{{ agPrevDisabled }}" aria-label="Dias anteriores" style="width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:18px;line-height:1;color:#FFFFFF;background:transparent;border:1px solid #806044;cursor:pointer;opacity:{{ agPrevOp }};transition:border-color 250ms ease" style-hover="border-color:#D2B18B">‹</button>
+                <button type="button" onClick="{{ agNext }}" disabled="{{ agNextDisabled }}" aria-label="Próximos dias" style="width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:18px;line-height:1;color:#FFFFFF;background:transparent;border:1px solid #806044;cursor:pointer;opacity:{{ agNextOp }};transition:border-color 250ms ease" style-hover="border-color:#D2B18B">›</button>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px">
+              <sc-for list="{{ agDias }}" as="d" hint-placeholder-count="7">
+                <button type="button" onClick="{{ d.pick }}" disabled="{{ d.disabled }}" aria-pressed="{{ d.pressed }}" aria-label="{{ d.aria }}" style="min-height:64px;padding:8px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:{{ d.cursor }};color:{{ d.fg }};background:{{ d.bg }};border:1px solid {{ d.bd }};transition:background 250ms ease,color 250ms ease,border-color 250ms ease">
+                  <span style="font-family:'Montserrat',sans-serif;font-size:10px;font-weight:500;line-height:1;letter-spacing:0.06em;text-transform:uppercase">{{ d.wd }}</span>
+                  <span style="font-family:'Montserrat',sans-serif;font-size:17px;font-weight:600;line-height:1">{{ d.num }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <p style="margin:0 0 14px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">3. Horário</p>
+            <sc-if value="{{ agShowSlots }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px">
+                <sc-for list="{{ agHoras }}" as="h" hint-placeholder-count="6">
+                  <button type="button" onClick="{{ h.pick }}" aria-pressed="{{ h.pressed }}" style="min-height:44px;padding:0 8px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:500;line-height:1;letter-spacing:0.02em;cursor:pointer;color:{{ h.fg }};background:{{ h.bg }};border:1px solid {{ h.bd }};transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="border-color:#D2B18B">{{ h.label }}</button>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ agShowMsg }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:18px 20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;background:#111111">
+                <p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#EAE8E5">{{ agMsg }}</p>
+                <sc-if value="{{ agIsError }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{ agRetry }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Tentar de novo</button>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+        <div style="padding:clamp(24px,3vw,36px);background:#111111;border:1px solid #806044">
+          <sc-if value="{{ agFormOpen }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:0 0 20px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Seu pedido</p>
+            <dl style="margin:0 0 24px;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:10px 20px">
+              <dt style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Serviço</dt><dd style="margin:0;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;line-height:1.4;color:#FFFFFF">{{ agResServico }}</dd><dt style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Dia</dt><dd style="margin:0;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;line-height:1.4;color:#FFFFFF">{{ agResDia }}</dd><dt style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Horário</dt><dd style="margin:0;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;line-height:1.4;color:#FFFFFF">{{ agResHora }}</dd><dt style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Valor</dt><dd style="margin:0;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;line-height:1.4;color:#FFFFFF">{{ agResValor }}</dd>
+            </dl>
+            <div style="padding-top:20px;border-top:1px solid #806044">
+              <sc-if value="{{ stLoading }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#EAE8E5;text-wrap:pretty;color:#99918A">Carregando…</p></sc-if>
+              <sc-if value="{{ stReady }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 16px">
+                  <p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#EAE8E5;text-wrap:pretty">Agendando como <strong style="color:#FFFFFF">{{ uNome }}</strong></p>
+                  <button type="button" onClick="{{ sair }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Sair</button>
+                </div>
+                <sc-if value="{{ agHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ agErr }}</p></sc-if>
+                <button type="button" onClick="{{ agEnviar }}" disabled="{{ agSending }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;opacity:{{ agBtnOp }}" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">{{ agBtnLabel }}</button>
+                <p style="margin:0;font-family:'Lato',sans-serif;font-size:13px;line-height:1.5;text-align:center;color:#99918A">O horário fica reservado para você até a Emi confirmar pelo WhatsApp.</p>
+              </div></sc-if>
+              <sc-if value="{{ stPerfil }}" hint-placeholder-val="{{ false }}"><form onSubmit="{{ salvarPerfil }}" style="display:flex;flex-direction:column;gap:16px">
+                <p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#EAE8E5;text-wrap:pretty">Para agendar, confira o seu nome e o seu WhatsApp.</p>
+                <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">Nome</span><input type="text" value="{{ pNome }}" onChange="{{ setPNome }}" autocomplete="name" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+                <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">WhatsApp</span><input type="tel" value="{{ pWhats }}" onChange="{{ setPWhats }}" inputmode="tel" autocomplete="tel" placeholder="(51) 90000-0000" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+                <sc-if value="{{ authHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ authErr }}</p></sc-if>
+                <button type="submit" disabled="{{ authBusy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;opacity:{{ authBtnOp }}" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Salvar e continuar</button>
+                <div style="display:flex;justify-content:center"><button type="button" onClick="{{ sair }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Sair</button></div>
+              </form></sc-if>
+              <sc-if value="{{ stGuest }}" hint-placeholder-val="{{ false }}"><div>
+                <p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.6;color:#EAE8E5;text-wrap:pretty;margin-bottom:18px">Para confirmar, entre na sua conta ou crie uma. Assim você acompanha os seus horários.</p>
+                <div role="tablist" aria-label="Conta" style="margin-bottom:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid #806044">
+                  <button type="button" role="tab" aria-selected="{{ tabEntrarSel }}" onClick="{{ tabEntrar }}" style="position:relative;min-height:44px;padding:0 8px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabEntrarFg }};background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Entrar<sc-if value="{{ tabEntrarOn }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#B89570"></span></sc-if></button><button type="button" role="tab" aria-selected="{{ tabCriarSel }}" onClick="{{ tabCriar }}" style="position:relative;min-height:44px;padding:0 8px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:{{ tabCriarFg }};background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Criar conta<sc-if value="{{ tabCriarOn }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#B89570"></span></sc-if></button>
+                </div>
+                <form onSubmit="{{ authSubmit }}" style="display:flex;flex-direction:column;gap:16px">
+                  <sc-if value="{{ tabCriarOn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:16px">
+                    <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">Nome</span><input type="text" value="{{ aNome }}" onChange="{{ setANome }}" autocomplete="name" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+                    <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">WhatsApp</span><input type="tel" value="{{ aWhats }}" onChange="{{ setAWhats }}" inputmode="tel" autocomplete="tel" placeholder="(51) 90000-0000" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+                  </div></sc-if>
+                  <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">E-mail</span><input type="email" value="{{ aEmail }}" onChange="{{ setAEmail }}" autocomplete="email" inputmode="email" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+                  <label style="display:flex;flex-direction:column;gap:8px"><span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">Senha</span><input type="password" value="{{ aSenha }}" onChange="{{ setASenha }}" autocomplete="{{ senhaAuto }}" placeholder="{{ senhaPh }}" style="width:100%;min-height:46px;padding:12px 14px;font-family:'Lato',sans-serif;font-size:16px;line-height:1.4;color:#050505;background:#FFFFFF;border:1px solid #99918A;border-radius:2px" style-focus="outline:2px solid #B89570;outline-offset:2px"></label>
+                  <sc-if value="{{ authHasMsg }}" hint-placeholder-val="{{ false }}"><p role="status" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.5;color:#D2B18B">{{ authMsg }}</p></sc-if>
+                  <sc-if value="{{ authHasErr }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ authErr }}</p></sc-if>
+                  <button type="submit" disabled="{{ authBusy }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;margin-top:4px;opacity:{{ authBtnOp }}" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">{{ authBtnLabel }}</button>
+                </form>
+                <sc-if value="{{ hasGoogle }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ entrarGoogle }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease;width:100%;margin-top:10px;color:#050505;background:#FFFFFF;border-color:#FFFFFF" style-hover="background:#EAE8E5;border-color:#EAE8E5">Entrar com Google</button></sc-if>
+              </div></sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ agSent }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+            <p style="margin:0;font-family:'Allura',cursive;font-size:30px;line-height:1.2;color:#B89570">Pedido enviado</p>
+            <p style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">{{ agResServico }}</p>
+            <p style="margin:0;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;line-height:1.4;color:#FFFFFF">{{ agResDia }} · {{ agResHora }}</p>
+            <p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">O horário está reservado para você. A Emi confirma pelo WhatsApp, e você acompanha o status em Meus agendamentos.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:4px 28px">
+              <button type="button" onClick="{{ verMeus }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Meus agendamentos</button>
+              <button type="button" onClick="{{ agNovo }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Fazer outro agendamento</button>
+            </div>
+          </div></sc-if>
+        </div>
+      </div>
+      <sc-if value="{{ showMeus }}" hint-placeholder-val="{{ false }}">
+        <div id="meus-agendamentos" style="max-width:1040px;margin:clamp(40px,5vw,56px) auto 0">
+          <p style="margin:0 0 6px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#EAE8E5">Meus agendamentos</p>
+          <sc-for list="{{ meusList }}" as="m" hint-placeholder-count="1">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;padding:18px 0;border-bottom:1px solid #806044">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <span style="font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;line-height:1.3;letter-spacing:0.03em;text-transform:uppercase;color:#FFFFFF">{{ m.servico }}</span>
+                <span style="font-family:'Lato',sans-serif;font-size:14px;line-height:1.4;color:#EAE8E5">{{ m.quando }}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 24px">
+                <span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:{{ m.cor }}">{{ m.status }}</span>
+                <button type="button" onClick="{{ m.cancelar }}" disabled="{{ m.busy }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">{{ m.cancelLabel }}</button>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ meusHasErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:14px"><p role="alert" style="margin:0;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;line-height:1.5;color:#E58C8C">{{ meusErr }}</p></div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ agDemo }}" hint-placeholder-val="{{ false }}"><p style="margin:20px auto 0;max-width:1040px;font-family:'Lato',sans-serif;font-size:12px;line-height:1.5;text-align:center;color:#99918A">Modo demonstração: horários de exemplo. Nada é salvo até o Supabase ser conectado.</p></sc-if>
+    </div>
+  </section>
+
+  <div aria-hidden="true" style="width:min(90%,1120px);height:1px;margin:0 auto;background:#806044"></div>
+
+  <section id="servicos" data-screen-label="04 Serviços" style="background:#050505;color:#FFFFFF;padding:clamp(80px,10vw,120px) 0;scroll-margin-top:76px">
+    <div style="width:min(90%,1120px);margin:0 auto">
+      <div style="margin-bottom:clamp(40px,5vw,64px);text-align:center">
+        <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#B89570">O que eu faço</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#FFFFFF">Serviços</h2>
+      </div>
+      <div style="max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:48px">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:28px 40px">
+          <div style="flex:1 1 400px;position:relative;aspect-ratio:4/3;background:#111111">
+            <image-slot id="servico-extensao" src="assets/cilios-aplicacao.jpg" shape="rect" placeholder="Foto: extensão de cílios (4:3)" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+          </div>
+          <div style="flex:1 1 300px;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+            <h3 style="margin:0;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Extensão de cílios</h3>
+            <p style="margin:0;max-width:40ch;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Volume brasileiro, egípcio, 5D ou fox eyes, com curvatura, espessura e comprimento escolhidos para o formato dos seus olhos.</p>
+            <a href="#agendar" onClick="{{ goAgendar }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin-top:8px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Agendar</a>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:row-reverse;flex-wrap:wrap;align-items:flex-start;gap:28px 40px">
+          <div style="flex:1 1 400px;position:relative;z-index:1;margin-top:clamp(-160px, calc(880px - 100vw), 0px);aspect-ratio:4/3;background:#111111">
+            <image-slot id="servico-lifting" src="assets/cilios-closeup.jpg" shape="rect" placeholder="Foto: lash lifting (4:3)" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+          </div>
+          <div style="flex:1 1 300px;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+            <h3 style="margin:0;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Lash lifting</h3>
+            <p style="margin:0;max-width:40ch;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Curvatura natural dos cílios, sem alongamento, que levanta e destaca o olhar. Ideal para realçar os cílios naturais, com efeito de máscara.</p>
+            <a href="#agendar" onClick="{{ bookLifting }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin-top:8px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease,border-color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Agendar</a>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:960px;margin:clamp(64px,8vw,96px) auto 0">
+        <p style="margin:0 0 8px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Todos os serviços</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));column-gap:40px">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:24px 0;border-top:1px solid #806044"><h4 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Volume brasileiro</h4><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Fios em formato de Y que preenchem com leveza, para um efeito natural.</p></div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:24px 0;border-top:1px solid #806044"><h4 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Volume egípcio</h4><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Fios em formato de W, para um olhar mais cheio e marcante.</p></div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:24px 0;border-top:1px solid #806044"><h4 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Volume 5D</h4><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Técnica de extensão de cílios com efeito marcado e fios bem definidos, ideal para realçar o olhar com volume moderado e acabamento elegante.</p></div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:24px 0;border-top:1px solid #806044"><h4 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Fox eyes</h4><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Fios mais longos nos cantos externos, que alongam e levantam o olhar.</p></div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:24px 0;border-top:1px solid #806044"><h4 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Lash lifting</h4><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Curvatura natural dos cílios, sem alongamento, que levanta e destaca o olhar.</p></div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:24px 0;border-top:1px solid #806044"><h4 style="margin:0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#FFFFFF">Manutenção</h4><p style="margin:0;font-family:'Lato',sans-serif;font-size:14px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Reposição dos fios que caíram com o ciclo natural dos cílios. Para volume brasileiro, egípcio e fox eyes.</p></div>
+        </div>
+      </div>
+      <div style="margin-top:clamp(48px,6vw,72px);display:flex;justify-content:center">
+        <a href="#agendar" onClick="{{ goAgendar }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-align:center;text-decoration:none;color:#FFFFFF;border-bottom:1px solid #B89570;transition:color 250ms ease" style-hover="color:#D2B18B">Ver horários disponíveis</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="trabalhos" data-screen-label="05 Trabalhos" style="background:#FFFFFF;color:#111111;padding:clamp(80px,10vw,120px) 0;scroll-margin-top:76px">
+    <div style="width:min(90%,1120px);margin:0 auto">
+      <div style="margin-bottom:clamp(40px,5vw,64px);text-align:center">
+        <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#806044">Resultados</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#050505">Trabalhos</h2>
+      </div>
+      <div style="max-width:960px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-start;gap:32px clamp(32px,5vw,56px)">
+        <div style="flex:1 1 260px;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+          <h3 style="margin:0;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#050505">Antes e depois</h3>
+          <p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Escolha a técnica para ver a diferença.</p>
+          <div role="tablist" aria-label="Técnica" style="width:100%;max-width:320px;margin-top:8px;display:flex;flex-direction:column">
+            <button type="button" role="tab" aria-selected="{{ baSel.brasileiro }}" onClick="{{ baGo.brasileiro }}" style="position:relative;display:block;width:100%;min-height:44px;padding:12px 0 12px 20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-align:left;color:#111111;background:transparent;border:0;border-left:1px solid #EAE8E5;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044">Volume brasileiro<sc-if value="{{ baOn.brasileiro }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:#B89570"></span></sc-if></button>
+            <button type="button" role="tab" aria-selected="{{ baSel.egipcio }}" onClick="{{ baGo.egipcio }}" style="position:relative;display:block;width:100%;min-height:44px;padding:12px 0 12px 20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-align:left;color:#111111;background:transparent;border:0;border-left:1px solid #EAE8E5;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044">Volume egípcio<sc-if value="{{ baOn.egipcio }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:#B89570"></span></sc-if></button>
+            <button type="button" role="tab" aria-selected="{{ baSel.v5d }}" onClick="{{ baGo.v5d }}" style="position:relative;display:block;width:100%;min-height:44px;padding:12px 0 12px 20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-align:left;color:#111111;background:transparent;border:0;border-left:1px solid #EAE8E5;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044">Volume 5D<sc-if value="{{ baOn.v5d }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:#B89570"></span></sc-if></button>
+            <button type="button" role="tab" aria-selected="{{ baSel.fox }}" onClick="{{ baGo.fox }}" style="position:relative;display:block;width:100%;min-height:44px;padding:12px 0 12px 20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-align:left;color:#111111;background:transparent;border:0;border-left:1px solid #EAE8E5;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044">Fox eyes<sc-if value="{{ baOn.fox }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:#B89570"></span></sc-if></button>
+            <button type="button" role="tab" aria-selected="{{ baSel.lifting }}" onClick="{{ baGo.lifting }}" style="position:relative;display:block;width:100%;min-height:44px;padding:12px 0 12px 20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-align:left;color:#111111;background:transparent;border:0;border-left:1px solid #EAE8E5;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044">Lash lifting<sc-if value="{{ baOn.lifting }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:#B89570"></span></sc-if></button>
+          </div>
+        </div>
+        <div style="flex:2 1 420px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+          <sc-if value="{{ baOn.brasileiro }}" hint-placeholder-val="{{ true }}">
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-brasileiro-antes" shape="rect" placeholder="Antes · volume brasileiro" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Antes</span></div>
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-brasileiro-depois" shape="rect" placeholder="Depois · volume brasileiro" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Depois</span></div>
+          </sc-if>
+          <sc-if value="{{ baOn.egipcio }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-egipcio-antes" shape="rect" placeholder="Antes · volume egípcio" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Antes</span></div>
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-egipcio-depois" shape="rect" placeholder="Depois · volume egípcio" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Depois</span></div>
+          </sc-if>
+          <sc-if value="{{ baOn.v5d }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-v5d-antes" shape="rect" placeholder="Antes · volume 5d" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Antes</span></div>
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-v5d-depois" shape="rect" placeholder="Depois · volume 5d" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Depois</span></div>
+          </sc-if>
+          <sc-if value="{{ baOn.fox }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-fox-antes" shape="rect" placeholder="Antes · fox eyes" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Antes</span></div>
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-fox-depois" shape="rect" placeholder="Depois · fox eyes" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Depois</span></div>
+          </sc-if>
+          <sc-if value="{{ baOn.lifting }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-lifting-antes" shape="rect" placeholder="Antes · lash lifting" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Antes</span></div>
+            <div style="position:relative;aspect-ratio:1/1;background:#EAE8E5"><image-slot id="ba-lifting-depois" shape="rect" placeholder="Depois · lash lifting" style="position:absolute;inset:0;width:100%;height:100%"></image-slot><span style="position:absolute;left:10px;top:10px;z-index:1;padding:5px 8px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:600;line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:#B89570;background:#050505;border:1px solid #B89570;pointer-events:none">Depois</span></div>
+          </sc-if>
+        </div>
+      </div>
+      <div style="max-width:960px;margin:clamp(56px,7vw,88px) auto 0">
+        <div style="margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px">
+          <h3 style="margin:0;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;line-height:1.3;letter-spacing:0.01em;text-transform:uppercase;color:#050505">Galeria</h3>
+          <a href="{{ instagramUrl }}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#050505;border-bottom:1px solid #B89570;transition:color 250ms ease" style-hover="color:#806044">Mais no Instagram</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+          <div style="position:relative;aspect-ratio:4/5;background:#EAE8E5"><image-slot id="galeria-1" shape="rect" placeholder="Trabalho" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          <div style="position:relative;aspect-ratio:4/5;background:#EAE8E5"><image-slot id="galeria-2" shape="rect" placeholder="Trabalho" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          <div style="position:relative;aspect-ratio:4/5;background:#EAE8E5"><image-slot id="galeria-3" shape="rect" placeholder="Trabalho" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          <div style="position:relative;aspect-ratio:4/5;background:#EAE8E5"><image-slot id="galeria-4" shape="rect" placeholder="Trabalho" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          <div style="position:relative;aspect-ratio:4/5;background:#EAE8E5"><image-slot id="galeria-5" shape="rect" placeholder="Trabalho" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          <div style="position:relative;aspect-ratio:4/5;background:#EAE8E5"><image-slot id="galeria-6" shape="rect" placeholder="Trabalho" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cuidados" data-screen-label="06 Cuidados" style="background:#050505;color:#FFFFFF;padding:clamp(80px,10vw,120px) 0;scroll-margin-top:76px">
+    <div style="width:min(90%,1120px);margin:0 auto">
+      <div style="margin-bottom:clamp(40px,5vw,56px);text-align:center">
+        <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#B89570">Depois do atendimento</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#FFFFFF">Cuidados</h2>
+        <p style="margin:20px auto 0;max-width:52ch;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Algumas recomendações para os seus cílios durarem mais e continuarem bonitos até a próxima manutenção.</p>
+      </div>
+      <ol style="max-width:960px;margin:0 auto;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));column-gap:40px">
+        <li style="display:flex;align-items:baseline;gap:20px;padding:24px 0;border-top:1px solid #806044"><span style="flex:none;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:500;line-height:1;letter-spacing:0.02em;color:#B89570">01</span><p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Evite molhar os cílios nas primeiras 24 horas.</p></li>
+        <li style="display:flex;align-items:baseline;gap:20px;padding:24px 0;border-top:1px solid #806044"><span style="flex:none;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:500;line-height:1;letter-spacing:0.02em;color:#B89570">02</span><p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Lave os fios todos os dias com espuma de limpeza própria para cílios e seque com leveza.</p></li>
+        <li style="display:flex;align-items:baseline;gap:20px;padding:24px 0;border-top:1px solid #806044"><span style="flex:none;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:500;line-height:1;letter-spacing:0.02em;color:#B89570">03</span><p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Penteie os cílios diariamente com uma escovinha limpa.</p></li>
+        <li style="display:flex;align-items:baseline;gap:20px;padding:24px 0;border-top:1px solid #806044"><span style="flex:none;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:500;line-height:1;letter-spacing:0.02em;color:#B89570">04</span><p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Não use rímel nem demaquilantes oleosos na região dos olhos.</p></li>
+        <li style="display:flex;align-items:baseline;gap:20px;padding:24px 0;border-top:1px solid #806044"><span style="flex:none;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:500;line-height:1;letter-spacing:0.02em;color:#B89570">05</span><p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Evite dormir com o rosto apoiado no travesseiro.</p></li>
+        <li style="display:flex;align-items:baseline;gap:20px;padding:24px 0;border-top:1px solid #806044"><span style="flex:none;font-family:'Montserrat',sans-serif;font-size:20px;font-weight:500;line-height:1;letter-spacing:0.02em;color:#B89570">06</span><p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#EAE8E5;text-wrap:pretty">Não puxe nem esfregue os fios. Para tirar a extensão, fale com a Emi.</p></li>
+      </ol>
+      <p style="margin:32px auto 0;max-width:960px;font-family:'Lato',sans-serif;font-size:14px;line-height:1.65;text-align:center;color:#99918A">No atendimento, você recebe as orientações certas para a técnica escolhida.</p>
+    </div>
+  </section>
+
+  <section id="duvidas" data-screen-label="07 Dúvidas" style="background:#FFFFFF;color:#111111;padding:clamp(80px,10vw,120px) 0;scroll-margin-top:76px">
+    <div style="width:min(90%,760px);margin:0 auto">
+      <div style="margin-bottom:clamp(40px,5vw,56px);text-align:center">
+        <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#806044">Ficou com alguma dúvida?</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#050505">Perguntas frequentes</h2>
+      </div>
+      <div style="border-top:1px solid #EAE8E5">
+        <div style="border-bottom:1px solid #EAE8E5">
+          <button type="button" onClick="{{ faqGo.q0 }}" aria-expanded="{{ faqExp.q0 }}" style="width:100%;min-height:44px;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;line-height:1.4;text-align:left;color:#050505;background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044"><span>Extensão de cílios estraga os cílios naturais?</span><span aria-hidden="true" style="position:relative;flex:none;width:14px;height:14px"><span style="position:absolute;left:0;top:6px;width:14px;height:1px;background:#806044"></span><sc-if value="{{ faqClosed.q0 }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:6px;top:0;width:1px;height:14px;background:#806044"></span></sc-if></span></button>
+          <sc-if value="{{ faqOpen.q0 }}" hint-placeholder-val="{{ true }}"><p style="margin:0;padding:0 40px 24px 0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Não, quando a aplicação e a remoção são feitas por uma profissional. Os fios são escolhidos de acordo com o peso que os seus cílios naturais suportam.</p></sc-if>
+        </div>
+        <div style="border-bottom:1px solid #EAE8E5">
+          <button type="button" onClick="{{ faqGo.q1 }}" aria-expanded="{{ faqExp.q1 }}" style="width:100%;min-height:44px;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;line-height:1.4;text-align:left;color:#050505;background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044"><span>Qual técnica é a ideal para mim?</span><span aria-hidden="true" style="position:relative;flex:none;width:14px;height:14px"><span style="position:absolute;left:0;top:6px;width:14px;height:1px;background:#806044"></span><sc-if value="{{ faqClosed.q1 }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:6px;top:0;width:1px;height:14px;background:#806044"></span></sc-if></span></button>
+          <sc-if value="{{ faqOpen.q1 }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 40px 24px 0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Depende do formato dos seus olhos, dos seus cílios naturais e do efeito que você procura. Antes de começar, a gente conversa e escolhe juntas.</p></sc-if>
+        </div>
+        <div style="border-bottom:1px solid #EAE8E5">
+          <button type="button" onClick="{{ faqGo.q2 }}" aria-expanded="{{ faqExp.q2 }}" style="width:100%;min-height:44px;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;line-height:1.4;text-align:left;color:#050505;background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044"><span>De quanto em quanto tempo preciso fazer manutenção?</span><span aria-hidden="true" style="position:relative;flex:none;width:14px;height:14px"><span style="position:absolute;left:0;top:6px;width:14px;height:1px;background:#806044"></span><sc-if value="{{ faqClosed.q2 }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:6px;top:0;width:1px;height:14px;background:#806044"></span></sc-if></span></button>
+          <sc-if value="{{ faqOpen.q2 }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 40px 24px 0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Os cílios naturais caem e se renovam, e a manutenção repõe os fios que saíram junto com eles. O prazo ideal eu te passo no atendimento.</p></sc-if>
+        </div>
+        <div style="border-bottom:1px solid #EAE8E5">
+          <button type="button" onClick="{{ faqGo.q3 }}" aria-expanded="{{ faqExp.q3 }}" style="width:100%;min-height:44px;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;line-height:1.4;text-align:left;color:#050505;background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044"><span>Quanto tempo dura o lash lifting?</span><span aria-hidden="true" style="position:relative;flex:none;width:14px;height:14px"><span style="position:absolute;left:0;top:6px;width:14px;height:1px;background:#806044"></span><sc-if value="{{ faqClosed.q3 }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:6px;top:0;width:1px;height:14px;background:#806044"></span></sc-if></span></button>
+          <sc-if value="{{ faqOpen.q3 }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 40px 24px 0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">O efeito acompanha o ciclo natural de renovação dos cílios e costuma durar de 6 a 8 semanas.</p></sc-if>
+        </div>
+        <div style="border-bottom:1px solid #EAE8E5">
+          <button type="button" onClick="{{ faqGo.q4 }}" aria-expanded="{{ faqExp.q4 }}" style="width:100%;min-height:44px;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;line-height:1.4;text-align:left;color:#050505;background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044"><span>Preciso ir sem maquiagem?</span><span aria-hidden="true" style="position:relative;flex:none;width:14px;height:14px"><span style="position:absolute;left:0;top:6px;width:14px;height:1px;background:#806044"></span><sc-if value="{{ faqClosed.q4 }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:6px;top:0;width:1px;height:14px;background:#806044"></span></sc-if></span></button>
+          <sc-if value="{{ faqOpen.q4 }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 40px 24px 0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Sim. Venha com os olhos limpos, sem rímel e sem maquiagem na região, para a fixação ficar melhor.</p></sc-if>
+        </div>
+        <div style="border-bottom:1px solid #EAE8E5">
+          <button type="button" onClick="{{ faqGo.q5 }}" aria-expanded="{{ faqExp.q5 }}" style="width:100%;min-height:44px;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:24px;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:600;line-height:1.4;text-align:left;color:#050505;background:transparent;border:0;cursor:pointer;transition:color 250ms ease" style-hover="color:#806044"><span>Como faço para agendar?</span><span aria-hidden="true" style="position:relative;flex:none;width:14px;height:14px"><span style="position:absolute;left:0;top:6px;width:14px;height:1px;background:#806044"></span><sc-if value="{{ faqClosed.q5 }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;left:6px;top:0;width:1px;height:14px;background:#806044"></span></sc-if></span></button>
+          <sc-if value="{{ faqOpen.q5 }}" hint-placeholder-val="{{ false }}"><p style="margin:0;padding:0 40px 24px 0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Aqui pelo site: escolha o serviço, o dia e o horário na seção de agendamento e envie o pedido. A Emi confirma pelo WhatsApp.</p></sc-if>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="conteudo" data-screen-label="08 Foto &amp; Conteúdo" style="background:#EAE8E5;color:#111111;padding:clamp(64px,8vw,96px) 0;scroll-margin-top:76px">
+    <div style="width:min(90%,1120px);margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:center;gap:clamp(40px,6vw,80px)">
+      <div style="max-width:440px;display:flex;flex-direction:column;align-items:flex-start;gap:14px">
+        <p style="margin:0;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,28px);font-weight:400;line-height:1.2;color:#806044">Além dos cílios</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(20px,2.2vw,24px);font-weight:700;line-height:1.25;letter-spacing:-0.01em;text-transform:uppercase;color:#050505;text-wrap:balance">Fotografia &amp; criação de conteúdo</h2>
+        <p style="margin:0;font-family:'Lato',sans-serif;font-size:15px;line-height:1.65;color:#111111;text-wrap:pretty">Faço ensaios fotográficos ao ar livre ou onde você preferir, e crio conteúdo para redes sociais. Se você precisa de fotos ou vídeos para o seu perfil ou para a sua marca, me chame para conversar.</p>
+        <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 28px">
+          <a href="#agendar" onClick="{{ bookEnsaio }}" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#050505;border-bottom:1px solid #B89570;transition:color 250ms ease" style-hover="color:#806044">Agendar ensaio</a>
+          <a href="{{ instagramUrl }}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#050505;border-bottom:1px solid #B89570;transition:color 250ms ease" style-hover="color:#806044">Ver no Instagram</a>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+        <div style="position:relative;aspect-ratio:4/5;background:#FFFFFF">
+          <image-slot id="conteudo-1" shape="rect" placeholder="Fotografia" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        </div>
+        <div style="position:relative;aspect-ratio:4/5;background:#FFFFFF">
+          <image-slot id="conteudo-2" shape="rect" placeholder="Conteúdo" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        </div>
+        <div style="position:relative;aspect-ratio:4/5;background:#FFFFFF">
+          <image-slot id="conteudo-3" shape="rect" placeholder="Fotografia" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato" data-screen-label="09 Contato" style="background:#050505;color:#FFFFFF;padding:clamp(72px,9vw,104px) 0;scroll-margin-top:76px">
+    <div style="width:min(90%,1120px);margin:0 auto">
+      <div style="margin-bottom:clamp(36px,5vw,52px);text-align:center">
+        <p style="margin:0 0 4px;font-family:'Allura',cursive;font-size:clamp(24px,2.6vw,30px);font-weight:400;line-height:1.2;color:#B89570">Onde me encontrar</p>
+        <h2 style="margin:0;font-family:'Montserrat',sans-serif;font-size:clamp(25px,3vw,32px);font-weight:700;line-height:1.15;letter-spacing:-0.01em;text-transform:uppercase;color:#FFFFFF">Contato</h2>
+      </div>
+      <div style="max-width:960px;margin:0 auto">
+        <div style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));align-items:start;gap:32px 40px;text-align:center">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Endereço</span>
+            <p style="margin:0;padding-top:6px;font-family:'Lato',sans-serif;font-size:15px;line-height:1.6;color:#FFFFFF">Centro Clínico UNIMED<br>R. Jacob Becker, 1351 - Centro<br>Venâncio Aires - RS, 95800-000</p>
+            <a href="{{ mapsUrl }}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 0 5px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:transparent;border:0;border-bottom:1px solid #B89570;cursor:pointer;transition:color 250ms ease" style-hover="color:#D2B18B">Ver no mapa</a>
+          </div>
+          <sc-if value="{{ hasWhats }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+              <span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">WhatsApp</span>
+              <a href="{{ whatsUrl }}" target="_blank" rel="noopener" style="padding:6px 0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:500;line-height:1.4;text-decoration:none;color:#FFFFFF;transition:color 250ms ease" style-hover="color:#D2B18B">{{ whatsDisplay }}</a>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <span style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1.4;letter-spacing:0.06em;text-transform:uppercase;color:#99918A">Instagram</span>
+            <a href="{{ instagramUrl }}" target="_blank" rel="noopener" style="padding:6px 0;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:500;line-height:1.4;text-decoration:none;color:#FFFFFF;transition:color 250ms ease" style-hover="color:#D2B18B">@emiisantos_</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:#111111;color:#99918A">
+    <div style="width:min(90%,1120px);margin:0 auto;padding:48px 0 32px;display:flex;flex-direction:column;gap:32px">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px 40px">
+        <a href="#inicio" onClick="{{ goInicio }}" aria-label="Emi Santos, voltar ao início" style="display:flex;flex-direction:column;align-items:flex-start;text-decoration:none">
+          <span style="font-family:'Allura',cursive;font-size:30px;line-height:1;color:#B89570">Emi Santos</span>
+          <span style="margin-top:3px;padding-left:2px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:500;line-height:1;letter-spacing:0.32em;text-transform:uppercase;color:#99918A">Lash Designer</span>
+        </a>
+        <nav aria-label="Rodapé" style="display:flex;flex-wrap:wrap;gap:0 24px">
+          <a href="#sobre" onClick="{{ goSobre }}" style="padding:12px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#EAE8E5;transition:color 250ms ease" style-hover="color:#D2B18B">Sobre</a>
+          <a href="#servicos" onClick="{{ goServicos }}" style="padding:12px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#EAE8E5;transition:color 250ms ease" style-hover="color:#D2B18B">Serviços</a>
+          <a href="#trabalhos" onClick="{{ goTrabalhos }}" style="padding:12px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#EAE8E5;transition:color 250ms ease" style-hover="color:#D2B18B">Trabalhos</a>
+          <a href="#cuidados" onClick="{{ goCuidados }}" style="padding:12px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#EAE8E5;transition:color 250ms ease" style-hover="color:#D2B18B">Cuidados</a>
+          <a href="#duvidas" onClick="{{ goDuvidas }}" style="padding:12px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#EAE8E5;transition:color 250ms ease" style-hover="color:#D2B18B">Dúvidas</a>
+          <a href="#conteudo" onClick="{{ goConteudo }}" style="padding:12px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#EAE8E5;transition:color 250ms ease" style-hover="color:#D2B18B">Foto &amp; Conteúdo</a>
+          <a href="#contato" onClick="{{ goContato }}" style="padding:12px 0;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#EAE8E5;transition:color 250ms ease" style-hover="color:#D2B18B">Contato</a>
+        </nav>
+      </div>
+      <div style="padding-top:24px;border-top:1px solid #806044;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px">
+        <p style="margin:0;font-family:'Lato',sans-serif;font-size:12px;line-height:1.5;color:#99918A">© 2026 Emi Santos · Lash Designer</p>
+        <p style="margin:0;font-family:'Lato',sans-serif;font-size:12px;line-height:1.5;color:#99918A">Centro Clínico UNIMED · Venâncio Aires - RS</p>
+        <a href="painel.html" style="padding:12px 0;font-family:'Lato',sans-serif;font-size:12px;line-height:1.5;color:#99918A;text-decoration:underline;text-underline-offset:3px" style-hover="color:#D2B18B">Área da Emi</a>
+      </div>
+    </div>
+  </footer>
+
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="Menu" style="position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;background:#050505;color:#FFFFFF">
+      <div style="width:90%;height:76px;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:'Allura',cursive;font-size:34px;line-height:1;color:#B89570">Emi Santos</span>
+        <button type="button" onClick="{{ closeMenu }}" aria-label="Fechar menu" style="position:relative;width:44px;height:44px;padding:0;background:transparent;border:1px solid #B89570;cursor:pointer">
+          <span style="position:absolute;left:11px;top:21px;width:20px;height:1px;background:#FFFFFF;transform:rotate(45deg)"></span>
+          <span style="position:absolute;left:11px;top:21px;width:20px;height:1px;background:#FFFFFF;transform:rotate(-45deg)"></span>
+        </button>
+      </div>
+      <nav aria-label="Menu" style="flex:1;overflow-y:auto;padding:8px 0 32px;display:flex;flex-direction:column;align-items:center;justify-content:safe center">
+        <a href="#inicio" onClick="{{ goInicio }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Início</a>
+        <a href="#sobre" onClick="{{ goSobre }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Sobre</a>
+        <a href="#servicos" onClick="{{ goServicos }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Serviços</a>
+        <a href="#trabalhos" onClick="{{ goTrabalhos }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Trabalhos</a>
+        <a href="#cuidados" onClick="{{ goCuidados }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Cuidados</a>
+        <a href="#duvidas" onClick="{{ goDuvidas }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Dúvidas</a>
+        <a href="#conteudo" onClick="{{ goConteudo }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Foto &amp; Conteúdo</a>
+        <a href="#contato" onClick="{{ goContato }}" style="padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:18px;font-weight:600;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;color:#FFFFFF" style-hover="color:#D2B18B">Contato</a>
+        <a href="#agendar" onClick="{{ goAgendar }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin-top:28px;padding:0 28px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:500;line-height:1;letter-spacing:0.05em;text-transform:uppercase;text-decoration:none;color:#FFFFFF;background:#050505;border:1px solid #B89570;cursor:pointer;transition:background 250ms ease,color 250ms ease" style-hover="background:#B89570;color:#050505" style-active="background:#806044;border-color:#806044;color:#FFFFFF">Agendar horário</a>
+      </nav>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;transicao&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;diagonal&quot;,&quot;reta&quot;],&quot;default&quot;:&quot;diagonal&quot;,&quot;tsType&quot;:&quot;\&quot;diagonal\&quot; | \&quot;reta\&quot;&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;agendarNoMenu&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+class Component extends DCLogic {
+  state = {
+    vw: typeof document !== 'undefined' ? (document.documentElement.clientWidth || window.innerWidth) : 1280,
+    active: 'inicio', menuOpen: false, ba: 'brasileiro', faq: 0,
+    cfg: null, live: false,
+    agStatus: 'loading', agData: null, agServico: null, agDia: null, agHora: null, agPage: 0,
+    agErr: '', agSending: false, agSent: false,
+    authReady: false, user: null, perfil: null, authTab: 'entrar',
+    aNome: '', aWhats: '', aEmail: '', aSenha: '', pNome: '', pWhats: '',
+    authErr: '', authMsg: '', authBusy: false,
+    meus: [], meusErr: '', cancelId: null, cancelBusy: false,
+  };
+  ids = ['inicio', 'sobre', 'agendar', 'servicos', 'trabalhos', 'cuidados', 'duvidas', 'conteudo', 'contato'];
+  techs = ['brasileiro', 'egipcio', 'v5d', 'fox', 'lifting'];
+  wd = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+  wdLong = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+  mes = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  mesLong = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  OFF = 3 * 36e5;
+
+  componentDidMount() {
+    this.onResize = () => {
+      const w = document.documentElement.clientWidth || window.innerWidth;
+      if (w !== this.state.vw) this.setState({ vw: w });
+    };
+    this.onScroll = () => {
+      if (this.raf) return;
+      this.raf = requestAnimationFrame(() => { this.raf = null; this.syncActive(); });
+    };
+    this.onKey = e => { if (e.key === 'Escape' && this.state.menuOpen) this.setState({ menuOpen: false }); };
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('scroll', this.onScroll, true);
+    window.addEventListener('keydown', this.onKey);
+    window.addEventListener('load', this.onResize);
+    this.onResize();
+    requestAnimationFrame(() => this.onResize());
+    if (typeof ResizeObserver !== 'undefined') {
+      this.ro = new ResizeObserver(() => this.onResize());
+      this.ro.observe(document.documentElement);
+    }
+    this.syncActive();
+    this.init();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('scroll', this.onScroll, true);
+    window.removeEventListener('keydown', this.onKey);
+    window.removeEventListener('load', this.onResize);
+    if (this.ro) this.ro.disconnect();
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.authSub) this.authSub.unsubscribe();
+  }
+
+  syncActive() {
+    const line = Math.max(120, window.innerHeight * 0.4);
+    let cur = this.ids[0];
+    for (const id of this.ids) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= line) cur = id;
+    }
+    if (cur !== this.state.active) this.setState({ active: cur });
+  }
+
+  scrollBox(el) {
+    for (let p = el.parentElement; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
+      const oy = getComputedStyle(p).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && p.scrollHeight > p.clientHeight) return p;
+    }
+    return null;
+  }
+
+  scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const box = this.scrollBox(el);
+    const delta = el.getBoundingClientRect().top - (box ? box.getBoundingClientRect().top : 0) - 76;
+    const top = id === 'inicio' ? 0 : (box ? box.scrollTop : window.scrollY) + delta;
+    (box || window).scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+
+  go(id) {
+    return e => {
+      if (e && e.preventDefault) e.preventDefault();
+      this.setState({ menuOpen: false, active: id });
+      this.scrollToSection(id);
+    };
+  }
+
+  waitFor(fn, ms) {
+    return new Promise(res => {
+      const t0 = Date.now();
+      const tick = () => { let v = null; try { v = fn(); } catch (e) {} if (v) return res(v); if (Date.now() - t0 > ms) return res(null); setTimeout(tick, 50); };
+      tick();
+    });
+  }
+
+  async init() {
+    const cfg = (await this.waitFor(() => window.EMI_CONFIG, 3000)) || {};
+    const live = !!(cfg.supabaseUrl && cfg.supabaseKey);
+    this.setState({ cfg, live });
+    if (!live) {
+      this.demo = this.demoData();
+      return this.setState({ agStatus: 'ready', agData: this.demo, authReady: true });
+    }
+    if (!(await this.waitFor(() => window.supabase && window.supabase.createClient, 8000))) return this.setState({ agStatus: 'error', authReady: true });
+    try {
+      this.sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+      const sub = this.sb.auth.onAuthStateChange((ev, s) => setTimeout(() => this.setUser(s ? s.user : null), 0));
+      this.authSub = sub && sub.data && sub.data.subscription;
+      const r = await this.sb.auth.getSession();
+      await this.setUser(r.data && r.data.session ? r.data.session.user : null);
+    } catch (e) {
+      this.setState({ authReady: true });
+    }
+    this.restoreSel();
+    this.loadAgenda();
+  }
+
+  async setUser(u) {
+    if (!u) return this.setState({ user: null, perfil: null, meus: [], authReady: true, authBusy: false });
+    if (this.state.user && this.state.user.id === u.id && this.state.perfil) return;
+    this.setState({ user: { id: u.id, email: u.email }, authReady: true });
+    const r = await this.sb.from('perfis').select('nome, whatsapp').eq('id', u.id).maybeSingle();
+    const perfil = r.data || { nome: '', whatsapp: '' };
+    this.setState(s => ({ perfil, pNome: perfil.nome || s.aNome, pWhats: this.maskPhone(perfil.whatsapp || s.aWhats), authBusy: false, aSenha: '', authErr: '' }));
+    this.loadMeus();
+  }
+
+  restoreSel() {
+    let s = null;
+    try { s = JSON.parse(sessionStorage.getItem('emi-agenda-sel') || 'null'); sessionStorage.removeItem('emi-agenda-sel'); } catch (e) {}
+    if (!s) return;
+    this.setState({ agServico: s.servico || null, agDia: s.dia || null, agHora: s.hora || null });
+    setTimeout(() => this.scrollToSection('agendar'), 500);
+  }
+
+  async loadAgenda() {
+    if (!this.sb) return this.setState(this.demo ? { agStatus: 'ready', agData: this.demo } : { agStatus: 'error' });
+    if (!this.state.agData) this.setState({ agStatus: 'loading' });
+    try {
+      const now = Date.now();
+      const r = await Promise.all([
+        this.sb.from('servicos').select('id, nome, duracao, valor').eq('ativo', true).order('ordem').order('id'),
+        this.sb.from('horarios').select('*'),
+        this.sb.from('config').select('*').eq('id', 1).maybeSingle(),
+        this.sb.rpc('horarios_ocupados', { de: new Date(now).toISOString(), ate: new Date(now + 400 * 864e5).toISOString() }),
+      ]);
+      const bad = r.find(x => x.error);
+      if (bad) throw bad.error;
+      const c = r[2].data || {};
+      this.setState({ agStatus: 'ready', agData: {
+        servicos: r[0].data || [],
+        horarios: (r[1].data || []).map(x => ({ dia: x.dia, abre: x.abre, fecha: x.fecha, pausaInicio: x.pausa_inicio, pausaFim: x.pausa_fim })),
+        ocupados: this.splitBusy(r[3].data || []),
+        config: { intervalo: c.intervalo, diasFrente: c.dias_frente, antecedencia: c.antecedencia_horas },
+      } });
+    } catch (e) {
+      this.setState({ agStatus: 'error' });
+    }
+  }
+
+  splitBusy(list) {
+    const out = [], D = 864e5;
+    list.forEach(r => {
+      let a = Date.parse(r.inicio) - this.OFF;
+      const b = Date.parse(r.fim) - this.OFF;
+      while (a < b) {
+        const day = Math.floor(a / D) * D, end = Math.min(b, day + D);
+        out.push({ data: this.keyUTC(day), a: Math.round((a - day) / 6e4), b: Math.round((end - day) / 6e4) });
+        a = end;
+      }
+    });
+    return out;
+  }
+
+  keyUTC(ms) { const d = new Date(ms), p = n => String(n).padStart(2, '0'); return p(d.getUTCDate()) + '/' + p(d.getUTCMonth() + 1) + '/' + d.getUTCFullYear(); }
+
+  demoData() {
+    const t = new Date(), k = n => this.keyBR(this.addDays(t, n));
+    const util = dia => ({ dia, abre: '09:00', fecha: '18:00', pausaInicio: '12:00', pausaFim: '13:00' });
+    const o = (n, a, b) => ({ data: k(n), a: this.toMin(a), b: this.toMin(b) });
+    return {
+      servicos: [['Aplicação volume brasileiro', 100, 150], ['Aplicação volume 5D', 100, 150], ['Aplicação fox eyes', 100, 150], ['Lash lifting', 80, 75], ['Manutenção volume brasileiro', 80, 80], ['Manutenção volume egípcio', 80, 80], ['Manutenção fox eyes', 80, 80], ['Ensaio fotográfico', 120, 200]].map((x, i) => ({ id: i + 1, nome: x[0], duracao: x[1], valor: x[2] })),
+      horarios: [1, 2, 3, 4, 5].map(util).concat([{ dia: 6, abre: '09:00', fecha: '13:00' }]),
+      ocupados: [o(1, '09:00', '12:00'), o(1, '14:00', '16:00'), o(2, '13:00', '15:30'), o(3, '10:00', '11:30'), o(4, '15:00', '18:00'), o(6, '00:00', '24:00')],
+      config: { intervalo: 30, diasFrente: 30, antecedencia: 12 },
+    };
+  }
+
+  day0(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  addDays(d, n) { const x = this.day0(d); x.setDate(x.getDate() + n); return x; }
+  keyBR(d) { const p = n => String(n).padStart(2, '0'); return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear(); }
+  parseBR(k) { const m = String(k || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/); return m ? new Date(+m[3], +m[2] - 1, +m[1]) : null; }
+  toMin(h) { const m = String(h || '').match(/(\d{1,2}):(\d{2})/); return m ? +m[1] * 60 + +m[2] : null; }
+  hhmm(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+  tsBR(key, min) { const d = this.parseBR(key); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 0, min) + this.OFF; }
+  isoBR(key, hora) { const m = String(key).match(/(\d{2})\/(\d{2})\/(\d{4})/); return m[3] + '-' + m[2] + '-' + m[1] + 'T' + hora + ':00-03:00'; }
+  wallBR(iso) { const ms = Date.parse(iso) - this.OFF, d = new Date(ms); return { key: this.keyUTC(ms), min: d.getUTCHours() * 60 + d.getUTCMinutes(), dow: d.getUTCDay() }; }
+  normPhone(v) {
+    let d = String(v || '').replace(/\D/g, '').replace(/^0+/, '');
+    if (d.length > 11 && d.indexOf('55') === 0) d = d.slice(2);
+    return d.slice(0, 11);
+  }
+
+  validPhone(d) { return /^[1-9]{2}(9\d{8}|[2-9]\d{7})$/.test(d); }
+
+  maskPhone(v) {
+    const d = this.normPhone(v);
+    if (!d) return '';
+    if (d.length <= 2) return '(' + d;
+    if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    if (d.length <= 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+    return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+  }
+
+  slots(date, dur, data) {
+    const d = data || this.state.agData;
+    if (!d || !date) return [];
+    const cfg = d.config || {};
+    const h = (d.horarios || []).find(x => +x.dia === date.getDay());
+    const open = h ? this.toMin(h.abre) : null, close = h ? this.toMin(h.fecha) : null;
+    if (open == null || close == null) return [];
+    const key = this.keyBR(date);
+    const busy = (d.ocupados || []).filter(o => o.data === key).map(o => [o.a, o.b]);
+    const pi = this.toMin(h.pausaInicio), pf = this.toMin(h.pausaFim);
+    if (pi != null && pf != null) busy.push([pi, pf]);
+    const step = Math.max(5, +cfg.intervalo || 30);
+    const ant = cfg.antecedencia == null || cfg.antecedencia === '' ? 12 : (+cfg.antecedencia || 0);
+    const minTs = Date.now() + ant * 36e5;
+    const out = [];
+    for (let t = open; t + dur <= close; t += step) {
+      const e = t + dur;
+      if (busy.some(([a, b]) => t < b && e > a)) continue;
+      if (this.tsBR(key, t) >= minTs) out.push(this.hhmm(t));
+    }
+    return out;
+  }
+
+  pickServico(nome) {
+    this.setState(st => {
+      const sv = ((st.agData && st.agData.servicos) || []).find(x => x.nome === nome);
+      if (!sv) return null;
+      let { agDia, agHora } = st;
+      if (agDia) {
+        const list = this.slots(this.parseBR(agDia), +sv.duracao || 60, st.agData);
+        if (!list.length) { agDia = null; agHora = null; } else if (agHora && list.indexOf(agHora) < 0) agHora = null;
+      }
+      return { agServico: nome, agDia, agHora, agErr: '' };
+    });
+  }
+
+  async enviar() {
+    const st = this.state, d = st.agData;
+    const sv = d && (d.servicos || []).find(x => x.nome === st.agServico);
+    if (!sv || !st.agDia || !st.agHora) return this.setState({ agErr: 'Escolha o serviço, o dia e o horário.' });
+    this.setState({ agSending: true, agErr: '' });
+    const iso = this.isoBR(st.agDia, st.agHora);
+    if (!this.sb) {
+      await new Promise(r => setTimeout(r, 600));
+      const a = this.toMin(st.agHora);
+      this.demo = Object.assign({}, this.demo, { ocupados: this.demo.ocupados.concat([{ data: st.agDia, a, b: a + (+sv.duracao || 60) }]) });
+      return this.setState(s => ({ agSending: false, agSent: true, agData: this.demo, meus: s.meus.concat([{ id: Date.now(), servico: sv.nome, inicio: iso, status: 'pendente' }]) }));
+    }
+    const { error } = await this.sb.rpc('agendar', { p_servico: sv.id, p_inicio: iso });
+    if (error) {
+      const m = String(error.message || '').toLowerCase();
+      const lost = /ocupado|prazo|fora/.test(m);
+      const msg = m.indexOf('ocupado') >= 0 ? 'Esse horário acabou de ser reservado por outra pessoa. Escolha outro, por favor.'
+        : m.indexOf('limite') >= 0 ? 'Você já tem agendamentos em aberto. Para marcar mais um, fale com a Emi pelo WhatsApp.'
+        : m.indexOf('prazo') >= 0 ? 'Esse horário não está mais disponível pelo site. Escolha outro.'
+        : m.indexOf('fora') >= 0 ? 'Esse horário está fora do atendimento. Escolha outro.'
+        : m.indexOf('perfil') >= 0 ? 'Complete o seu nome e WhatsApp para agendar.'
+        : m.indexOf('login') >= 0 || m.indexOf('jwt') >= 0 ? 'Sua sessão expirou. Entre de novo para agendar.'
+        : 'Não foi possível agendar agora. Tente de novo em instantes.';
+      this.setState({ agSending: false, agErr: msg, agHora: lost ? null : st.agHora });
+      if (lost) this.loadAgenda();
+      return;
+    }
+    this.setState({ agSending: false, agSent: true });
+    this.loadAgenda();
+    this.loadMeus();
+  }
+
+  authErrMsg(e) {
+    const m = String((e && e.message) || '').toLowerCase();
+    if (m.indexOf('invalid login') >= 0) return 'E-mail ou senha incorretos.';
+    if (m.indexOf('already') >= 0) return 'Esse e-mail já tem conta. Use a aba Entrar.';
+    if (m.indexOf('not confirmed') >= 0) return 'Confirme o seu e-mail pelo link que enviamos e depois entre.';
+    if (m.indexOf('rate') >= 0 || m.indexOf('too many') >= 0) return 'Muitas tentativas seguidas. Espere um pouco e tente de novo.';
+    if (m.indexOf('password') >= 0) return 'A senha precisa ter pelo menos 6 caracteres.';
+    if (m.indexOf('email') >= 0) return 'Confira o e-mail digitado.';
+    return 'Não foi possível continuar agora. Tente de novo.';
+  }
+
+  async authSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const st = this.state, criar = st.authTab === 'criar';
+    const email = st.aEmail.trim(), senha = st.aSenha, nome = st.aNome.trim(), whats = this.normPhone(st.aWhats);
+    if (criar && nome.length < 2) return this.setState({ authErr: 'Informe o seu nome.' });
+    if (criar && !this.validPhone(whats)) return this.setState({ authErr: 'Confira o seu WhatsApp: DDD e número, como (51) 99999-9999.' });
+    if (!/^\S+@\S+\.\S+$/.test(email)) return this.setState({ authErr: 'Informe um e-mail válido.' });
+    if (senha.length < 6) return this.setState({ authErr: 'A senha precisa ter pelo menos 6 caracteres.' });
+    this.setState({ authBusy: true, authErr: '', authMsg: '' });
+    if (!this.sb) {
+      await new Promise(r => setTimeout(r, 500));
+      return this.setState({ authBusy: false, aSenha: '', user: { id: 'demo', email }, perfil: { nome: criar ? nome : 'Cliente', whatsapp: criar ? whats : '51999999999' } });
+    }
+    try {
+      if (criar) {
+        const { data, error } = await this.sb.auth.signUp({ email, password: senha, options: { data: { nome, whatsapp: whats } } });
+        if (error) throw error;
+        if (!data.session) this.setState({ authBusy: false, authTab: 'entrar', aSenha: '', authMsg: 'Conta criada. Confirme pelo link que enviamos para o seu e-mail e depois entre com a sua senha.' });
+      } else {
+        const { error } = await this.sb.auth.signInWithPassword({ email, password: senha });
+        if (error) throw error;
+      }
+    } catch (err) {
+      this.setState({ authBusy: false, authErr: this.authErrMsg(err) });
+    }
+  }
+
+  async salvarPerfil(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const nome = this.state.pNome.trim(), whatsapp = this.normPhone(this.state.pWhats);
+    if (nome.length < 2) return this.setState({ authErr: 'Informe o seu nome.' });
+    if (!this.validPhone(whatsapp)) return this.setState({ authErr: 'Confira o seu WhatsApp: DDD e número, como (51) 99999-9999.' });
+    this.setState({ authBusy: true, authErr: '' });
+    if (this.sb) {
+      const { error } = await this.sb.from('perfis').update({ nome, whatsapp }).eq('id', this.state.user.id);
+      if (error) return this.setState({ authBusy: false, authErr: 'Não foi possível salvar agora. Tente de novo.' });
+    }
+    this.setState({ authBusy: false, perfil: { nome, whatsapp } });
+  }
+
+  async sair() {
+    if (this.sb) { try { await this.sb.auth.signOut(); } catch (e) {} }
+    this.setState({ user: null, perfil: null, meus: [], authTab: 'entrar', aSenha: '', authErr: '', authMsg: '', agSent: false, cancelId: null });
+  }
+
+  entrarGoogle() {
+    if (!this.sb) return;
+    const st = this.state;
+    try { sessionStorage.setItem('emi-agenda-sel', JSON.stringify({ servico: st.agServico, dia: st.agDia, hora: st.agHora })); } catch (e) {}
+    this.sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+  }
+
+  async loadMeus() {
+    if (!this.sb || !this.state.user) return;
+    const r = await this.sb.from('agendamentos').select('id, servico, inicio, status').eq('cliente', this.state.user.id).neq('status', 'cancelado').gte('fim', new Date().toISOString()).order('inicio');
+    if (!r.error) this.setState({ meus: r.data || [] });
+  }
+
+  async cancelar(id) {
+    if (this.state.cancelId !== id) return this.setState({ cancelId: id, meusErr: '' });
+    this.setState({ cancelBusy: true, meusErr: '' });
+    if (this.sb) {
+      const { error } = await this.sb.rpc('cancelar_agendamento', { p_id: id });
+      if (error) return this.setState({ cancelBusy: false, cancelId: null, meusErr: 'Não foi possível cancelar pelo site. Fale com a Emi pelo WhatsApp.' });
+      this.loadAgenda();
+    } else {
+      const m = this.state.meus.find(x => x.id === id);
+      if (m) {
+        const w = this.wallBR(m.inicio);
+        this.demo = Object.assign({}, this.demo, { ocupados: this.demo.ocupados.filter(o => !(o.data === w.key && o.a === w.min)) });
+        this.setState({ agData: this.demo });
+      }
+    }
+    this.setState(s => ({ cancelBusy: false, cancelId: null, meus: s.meus.filter(x => x.id !== id) }));
+  }
+
+  bookService(term) {
+    return e => {
+      if (e && e.preventDefault) e.preventDefault();
+      const sv = ((this.state.agData && this.state.agData.servicos) || []).find(x => String(x.nome).toLowerCase().indexOf(term) >= 0);
+      if (sv) this.pickServico(sv.nome);
+      this.scrollToSection('agendar');
+    };
+  }
+
+  fmtDur(m) {
+    m = parseInt(m, 10);
+    if (!m) return '';
+    const h = Math.floor(m / 60), r = m % 60;
+    return h ? h + 'h' + (r ? String(r).padStart(2, '0') : '') : r + ' min';
+  }
+
+  fmtValor(v) {
+    if (v === undefined || v === null || v === '') return '';
+    const n = typeof v === 'number' ? v : parseFloat(String(v).replace(/[^\d,.-]/g, '').replace(/\.(?=\d{3})/g, '').replace(',', '.'));
+    return isNaN(n) ? String(v) : n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  renderVals() {
+    const st = this.state;
+    const { vw, active, menuOpen, ba, faq } = st;
+    const p = this.props || {};
+    const cfg = st.cfg || {};
+    const isWide = vw >= 1000;
+    const wNum = String(cfg.whatsapp || p.whatsapp || '555195616243').replace(/\D/g, '');
+    const wLocal = wNum.length > 11 && wNum.indexOf('55') === 0 ? wNum.slice(2) : wNum;
+    const wFull = wLocal ? '55' + wLocal : '';
+    const v = {
+      isWide,
+      isNarrow: !isWide,
+      heroSide: vw >= 800,
+      heroStacked: vw < 800,
+      menuOpen,
+      menuOpenAttr: menuOpen ? 'true' : 'false',
+      openMenu: () => this.setState({ menuOpen: true }),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      instagramUrl: 'https://www.instagram.com/emiisantos_/',
+      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Centro Clínico UNIMED, R. Jacob Becker, 1351 - Centro, Venâncio Aires - RS, 95800-000'),
+      diagonal: (p.transicao ?? 'diagonal') !== 'reta',
+      showHeaderCta: p.agendarNoMenu ?? true,
+      hasWhats: !!wFull,
+      noWhats: !wFull,
+      whatsUrl: wFull ? 'https://wa.me/' + wFull : '',
+      whatsDisplay: this.maskPhone(wLocal),
+      bookLifting: this.bookService('lifting'),
+      bookEnsaio: this.bookService('ensaio'),
+      baOn: {}, baSel: {}, baGo: {},
+      faqOpen: {}, faqClosed: {}, faqExp: {}, faqGo: {},
+    };
+    for (const id of this.ids) {
+      const k = id.charAt(0).toUpperCase() + id.slice(1);
+      v['go' + k] = this.go(id);
+      v['on' + k] = active === id;
+      v['cur' + k] = active === id ? 'location' : undefined;
+    }
+    for (const t of this.techs) {
+      v.baOn[t] = ba === t;
+      v.baSel[t] = ba === t ? 'true' : 'false';
+      v.baGo[t] = () => this.setState({ ba: t });
+    }
+    for (let i = 0; i < 6; i++) {
+      const k = 'q' + i, open = faq === i;
+      v.faqOpen[k] = open;
+      v.faqClosed[k] = !open;
+      v.faqExp[k] = open ? 'true' : 'false';
+      v.faqGo[k] = () => this.setState(s2 => ({ faq: s2.faq === i ? null : i }));
+    }
+
+    const d = st.agData;
+    const servs = (d && d.servicos) || [];
+    const sel = servs.find(x => x.nome === st.agServico) || null;
+    const dur = sel ? (+sel.duracao || 60) : (servs.length ? Math.min.apply(null, servs.map(x => +x.duracao || 60)) : 60);
+    const C = { on: ['#050505', '#B89570', '#B89570'], off: ['#FFFFFF', 'transparent', '#806044'], dis: ['#99918A', '#111111', '#111111'] };
+    const sty = k => ({ fg: C[k][0], bg: C[k][1], bd: C[k][2] });
+    v.agServicos = servs.map(x => { const on = x.nome === st.agServico; return Object.assign({ nome: x.nome, info: [this.fmtDur(x.duracao), this.fmtValor(x.valor)].filter(Boolean).join(' · '), sub: on ? '#050505' : '#99918A', pressed: String(on), pick: () => this.pickServico(x.nome) }, sty(on ? 'on' : 'off')); });
+    const today = this.day0(new Date());
+    const ahead = Math.max(7, +((d && d.config && d.config.diasFrente) || 30));
+    const pages = Math.ceil(ahead / 7);
+    const page = Math.min(st.agPage, pages - 1);
+    v.agDias = [];
+    for (let i = page * 7; i < page * 7 + 7; i++) {
+      const date = this.addDays(today, i);
+      const key = this.keyBR(date);
+      const ok = !!d && st.agStatus === 'ready' && i < ahead && this.slots(date, dur).length > 0;
+      const on = ok && key === st.agDia;
+      v.agDias.push(Object.assign({
+        wd: this.wd[date.getDay()],
+        num: String(date.getDate()),
+        disabled: !ok,
+        pressed: String(on),
+        cursor: ok ? 'pointer' : 'default',
+        aria: this.wdLong[date.getDay()] + ', ' + date.getDate() + ' de ' + this.mesLong[date.getMonth()] + (ok ? '' : ', sem horários'),
+        pick: () => { if (ok) this.setState({ agDia: key, agHora: null, agErr: '' }); },
+      }, sty(on ? 'on' : ok ? 'off' : 'dis')));
+    }
+    const a0 = this.addDays(today, page * 7), a6 = this.addDays(today, page * 7 + 6);
+    v.agMes = a0.getMonth() === a6.getMonth() ? this.mesLong[a0.getMonth()] + ' ' + a0.getFullYear() : this.mes[a0.getMonth()] + ' – ' + this.mes[a6.getMonth()] + ' ' + a6.getFullYear();
+    v.agPrev = () => this.setState({ agPage: Math.max(0, page - 1) });
+    v.agNext = () => this.setState({ agPage: Math.min(pages - 1, page + 1) });
+    v.agPrevDisabled = page === 0;
+    v.agNextDisabled = page >= pages - 1;
+    v.agPrevOp = page === 0 ? 0.35 : 1;
+    v.agNextOp = page >= pages - 1 ? 0.35 : 1;
+    const selDate = this.parseBR(st.agDia);
+    const horas = sel && selDate && st.agStatus === 'ready' ? this.slots(selDate, dur) : [];
+    v.agHoras = horas.map(hh => Object.assign({ label: hh, pressed: String(hh === st.agHora), pick: () => this.setState({ agHora: hh, agErr: '' }) }, sty(hh === st.agHora ? 'on' : 'off')));
+    v.agShowSlots = horas.length > 0;
+    v.agShowMsg = !v.agShowSlots;
+    v.agIsError = st.agStatus === 'error';
+    v.agRetry = () => (this.sb ? this.loadAgenda() : this.init());
+    v.agMsg = st.agStatus === 'loading' ? 'Carregando horários…'
+      : st.agStatus === 'error' ? 'Não foi possível carregar a agenda agora.'
+      : !servs.length ? 'Nenhum serviço disponível no momento.'
+      : !sel ? 'Escolha um serviço para ver os horários livres.'
+      : !selDate ? 'Agora escolha um dia.'
+      : 'Sem horários livres neste dia. Escolha outra data.';
+    const diaTxt = selDate ? this.wdLong[selDate.getDay()] + ', ' + this.keyBR(selDate).slice(0, 5) : '';
+    v.agResServico = st.agServico || '—';
+    v.agResDia = diaTxt || '—';
+    v.agResHora = st.agHora || '—';
+    v.agResValor = sel ? (this.fmtValor(sel.valor) || '—') : '—';
+    v.agHasErr = !!st.agErr;
+    v.agErr = st.agErr;
+    v.agEnviar = () => this.enviar();
+    v.agSending = st.agSending;
+    v.agBtnLabel = st.agSending ? 'Agendando…' : 'Confirmar agendamento';
+    v.agBtnOp = st.agSending ? 0.6 : 1;
+    v.agFormOpen = !st.agSent;
+    v.agSent = st.agSent;
+    v.agNovo = () => this.setState({ agSent: false, agHora: null, agErr: '' });
+    v.verMeus = () => this.scrollToSection('meus-agendamentos');
+    v.agDemo = st.cfg !== null && !st.live;
+
+    const authed = !!st.user, pf = st.perfil;
+    const perfilOk = !!(pf && String(pf.nome || '').trim().length >= 2 && this.validPhone(this.normPhone(pf.whatsapp)));
+    v.stLoading = !st.authReady || (authed && !pf);
+    v.stGuest = st.authReady && !authed;
+    v.stPerfil = authed && !!pf && !perfilOk;
+    v.stReady = authed && perfilOk;
+    v.uNome = pf ? pf.nome : '';
+    const criar = st.authTab === 'criar';
+    v.tabEntrarOn = !criar; v.tabCriarOn = criar;
+    v.tabEntrarSel = String(!criar); v.tabCriarSel = String(criar);
+    v.tabEntrarFg = criar ? '#99918A' : '#FFFFFF'; v.tabCriarFg = criar ? '#FFFFFF' : '#99918A';
+    v.tabEntrar = () => this.setState({ authTab: 'entrar', authErr: '', authMsg: '' });
+    v.tabCriar = () => this.setState({ authTab: 'criar', authErr: '', authMsg: '' });
+    const set = (k, mask) => e => this.setState({ [k]: mask ? this.maskPhone(e.target.value) : e.target.value, authErr: '' });
+    v.aNome = st.aNome; v.aWhats = st.aWhats; v.aEmail = st.aEmail; v.aSenha = st.aSenha; v.pNome = st.pNome; v.pWhats = st.pWhats;
+    v.setANome = set('aNome'); v.setAWhats = set('aWhats', true); v.setAEmail = set('aEmail'); v.setASenha = set('aSenha'); v.setPNome = set('pNome'); v.setPWhats = set('pWhats', true);
+    v.senhaAuto = criar ? 'new-password' : 'current-password';
+    v.senhaPh = criar ? 'Mínimo de 6 caracteres' : '';
+    v.authSubmit = e => this.authSubmit(e);
+    v.salvarPerfil = e => this.salvarPerfil(e);
+    v.authBusy = st.authBusy; v.authBtnOp = st.authBusy ? 0.6 : 1;
+    v.authBtnLabel = st.authBusy ? 'Aguarde…' : criar ? 'Criar conta' : 'Entrar';
+    v.authHasErr = !!st.authErr; v.authErr = st.authErr; v.authHasMsg = !!st.authMsg; v.authMsg = st.authMsg;
+    v.sair = () => this.sair();
+    v.hasGoogle = st.live && !!cfg.loginGoogle;
+    v.entrarGoogle = () => this.entrarGoogle();
+
+    v.meusList = st.meus.map(m => {
+      const w = this.wallBR(m.inicio), conf = m.status === 'confirmado', armed = st.cancelId === m.id;
+      return {
+        servico: m.servico,
+        quando: this.wdLong[w.dow] + ', ' + w.key.slice(0, 5) + ' às ' + this.hhmm(w.min),
+        status: conf ? 'Confirmado' : 'Aguardando confirmação',
+        cor: conf ? '#FFFFFF' : '#B89570',
+        cancelLabel: armed ? (st.cancelBusy ? 'Cancelando…' : 'Confirmar cancelamento') : 'Cancelar',
+        busy: st.cancelBusy,
+        cancelar: () => this.cancelar(m.id),
+      };
+    });
+    v.showMeus = authed && st.meus.length > 0;
+    v.meusHasErr = !!st.meusErr; v.meusErr = st.meusErr;
+    return v;
+  }
+}
+</script>
+</body>
+</html>
